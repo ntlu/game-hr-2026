@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R5 - GIẢI MÃ BÍ ẨN</title>
+    <link rel="stylesheet" href="styleR5.css" />
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./node_modules/animate.css/animate.min.css" />
+    <script src="./vue-2.6.10.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <audio class="d-none" loop :src="audioSrc" id="bgm" ref="bgm"></audio>
+        <audio class="d-none" :src="sfxSrc" id="sfx" ref="sfx"></audio>
+        <video id="bg" autoplay muted loop src="../bg-video-2.mp4"></video>
+
+        <!-- Title -->
+        <div id="roundTitleWrapper">
+            <div id="roundTitle"></div>
+        </div>
+
+        <!-- Main Game View -->
+        <div class="game-container">
+            <!-- Background Image & Grid -->
+            <div class="mystery-image-container"
+                :class="{ revealed: showFullImage, 'overflow-visible': animatingPiece }"
+                style="background-image: url('static/big-img-2.png');">
+                <div class="pieces-grid">
+                    <div class="piece" v-for="(piece, i) in pieces" :key="i"
+                        :class="{ locked: piece.status === 'locked', solved: piece.status === 'solved', shaking: i === animatingPieceIndex }">
+                        <span v-if="piece.status !== 'solved' && !showFullImage">{{ piece.id }}</span>
+                        <!-- Clone for zooming out while original piece stays to cover the image -->
+                        <div v-if="i === animatingPieceIndex" class="piece-zoom-clone">
+                            {{ piece.id }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final 30s Timer -->
+            <div class="final-timer-wrapper" v-if="showFinalTimer">
+                <div id="counterAni">
+                    <div id="outer"></div>
+                    <div id="inner"></div>
+                    <h1 id="counterText" :style="{ color: finalCounterColor }">{{ finalCounterText }}</h1>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Overlay -->
+        <div class="overlay animate__animated animate__fadeIn" v-if="showQuestion && currentPieceIndex !== null"
+            style="animation-duration: 0.4s;">
+            <div class="q-box animate__animated animate__zoomIn" style="animation-duration: 0.4s;">
+                <div class="q-stt" style="font-size: 35px; color: #0ff; margin-bottom: 20px; font-weight: bold;">
+                    {{ qDB[currentPieceIndex].stt }}
+                </div>
+                <div class="q-text">{{ qDB[currentPieceIndex].q }}</div>
+
+                <!-- 15s Timer inside overlay -->
+                <div v-show="counterStatus" class="timer-wrapper">
+                    <div id="counterAni">
+                        <div id="outer"></div>
+                        <div id="inner"></div>
+                        <h1 id="counterText" :style="{ color: counterColor }">{{ counterText }}</h1>
+                    </div>
+                </div>
+
+                <!-- Answer -->
+                <div class="ans-text animate__animated animate__flipInX" v-if="showAnswer">
+                    {{ qDB[currentPieceIndex].ans }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="./r5.js"></script>
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data: () => ({
+                audioSrc: '../bgm_1.mp3',
+                sfxSrc: '../end.mp3',
+                qDB: qDB, // from r5.js
+                pieces: Array.from({ length: 20 }, (_, i) => ({
+                    id: i + 1,
+                    status: 'hidden' // hidden | locked | solved
+                })),
+                currentPieceIndex: null,
+                showQuestion: false,
+                showAnswer: false,
+
+                // Piece Timer
+                counterTime: 0,
+                counterStatus: false,
+                counterText: '15',
+                counterColor: 'lime',
+                intervalId: null,
+
+                // Final Timer
+                showFinalTimer: false,
+                finalCounterTime: 0,
+                finalCounterText: '30',
+                finalCounterColor: 'lime',
+                finalIntervalId: null,
+
+                showFullImage: false,
+                animatingPiece: false,
+                animatingPieceIndex: null
+            }),
+            methods: {
+                playBGM(fileName) {
+                    this.audioSrc = fileName;
+                    this.$refs['bgm'].src = this.audioSrc;
+                    this.$refs['bgm'].play();
+                },
+                playSFX(fileName) {
+                    this.sfxSrc = fileName;
+                    this.$refs['sfx'].src = this.sfxSrc;
+                    this.$refs['sfx'].play();
+                },
+                stopBGM() {
+                    this.$refs['bgm'].pause();
+                    this.$refs['bgm'].currentTime = 0;
+                },
+
+                startPieceTimer(seconds) {
+                    if (this.intervalId !== null) {
+                        clearInterval(this.intervalId);
+                    }
+                    this.counterStatus = true;
+                    this.playBGM(this.audioSrc);
+                    this.counterTime = seconds;
+                    this.updateCounterDisplay();
+
+                    this.intervalId = setInterval(() => {
+                        this.counterTime--;
+                        if (this.counterTime <= 0) {
+                            clearInterval(this.intervalId);
+                            this.intervalId = null;
+                            this.stopBGM();
+                            this.playSFX('../end.mp3');
+                            this.counterStatus = false;
+                            this.updateCounterDisplay();
+                        } else {
+                            this.updateCounterDisplay();
+                        }
+                    }, 1000);
+                },
+                updateCounterDisplay() {
+                    if (this.counterTime <= 10) {
+                        this.counterColor = 'red';
+                    } else {
+                        this.counterColor = 'lime';
+                    }
+                    let displaySecs = this.counterTime;
+                    if (displaySecs < 10 && displaySecs > 0) displaySecs = '0' + displaySecs;
+                    this.counterText = displaySecs.toString();
+                },
+
+                startFinalTimer(seconds) {
+                    if (this.finalIntervalId !== null) {
+                        clearInterval(this.finalIntervalId);
+                    }
+                    this.showFinalTimer = true;
+                    this.playBGM(this.audioSrc);
+                    this.finalCounterTime = seconds;
+                    this.updateFinalCounterDisplay();
+
+                    this.finalIntervalId = setInterval(() => {
+                        this.finalCounterTime--;
+                        if (this.finalCounterTime <= 0) {
+                            clearInterval(this.finalIntervalId);
+                            this.finalIntervalId = null;
+                            this.stopBGM();
+                            this.playSFX('../end.mp3');
+                            this.showFinalTimer = false;
+                            this.updateFinalCounterDisplay();
+                        } else {
+                            this.updateFinalCounterDisplay();
+                        }
+                    }, 1000);
+                },
+                updateFinalCounterDisplay() {
+                    if (this.finalCounterTime <= 10) {
+                        this.finalCounterColor = 'red';
+                    } else {
+                        this.finalCounterColor = 'lime';
+                    }
+                    let displaySecs = this.finalCounterTime;
+                    if (displaySecs < 10 && displaySecs > 0) displaySecs = '0' + displaySecs;
+                    this.finalCounterText = displaySecs.toString();
+                }
+            },
+            created() {
+                const _this = this;
+                const channel = new BroadcastChannel('myChannelR5');
+                channel.addEventListener('message', (event) => {
+                    console.log(event.data);
+                    let _cmd = event.data.message.cmd;
+                    let _data = event.data.message.data;
+
+                    if (_cmd === 'openQuestion') {
+                        _this.currentPieceIndex = _data;
+                        _this.animatingPieceIndex = _data;
+                        _this.animatingPiece = true;
+                        _this.showQuestion = false;
+                        _this.showAnswer = false;
+                        _this.counterStatus = false;
+
+                        // Show question midway through the zoom
+                        // Shake is 0.8s, Zoom is 2s (Total 2.8s)
+                        setTimeout(() => {
+                            if (_this.animatingPiece) {
+                                _this.showQuestion = true;
+                            }
+                        }, 1800);
+
+                        // Reset animation state when done
+                        setTimeout(() => {
+                            if (_this.animatingPiece) {
+                                _this.animatingPiece = false;
+                                _this.animatingPieceIndex = null;
+                            }
+                        }, 1850);
+                    }
+                    else if (_cmd === 'startTimer') {
+                        _this.startPieceTimer(_data);
+                    }
+                    else if (_cmd === 'showAnswer') {
+                        _this.showAnswer = true;
+                    }
+                    else if (_cmd === 'markCorrect') {
+                        if (_this.currentPieceIndex !== null) {
+                            _this.pieces[_this.currentPieceIndex].status = 'solved';
+                            _this.playSFX('../correct.mp3'); // Example sfx
+                        }
+                        _this.showQuestion = false;
+                        if (_this.intervalId) clearInterval(_this.intervalId);
+                        _this.stopBGM();
+                    }
+                    else if (_cmd === 'markIncorrect') {
+                        if (_this.currentPieceIndex !== null) {
+                            _this.pieces[_this.currentPieceIndex].status = 'locked';
+                            _this.playSFX('../sai.mp3');
+                        }
+                        _this.showQuestion = false;
+                        if (_this.intervalId) clearInterval(_this.intervalId);
+                        _this.stopBGM();
+                    }
+                    else if (_cmd === 'closeQuestion') {
+                        _this.animatingPiece = false;
+                        _this.animatingPieceIndex = null;
+                        _this.showQuestion = false;
+                        if (_this.intervalId) clearInterval(_this.intervalId);
+                        _this.stopBGM();
+                    }
+                    else if (_cmd === 'startFinalTimer') {
+                        _this.startFinalTimer(_data);
+                    }
+                    else if (_cmd === 'revealImage') {
+                        _this.showFullImage = true;
+                        _this.showFinalTimer = false;
+                    }
+                    else if (_cmd === 'resetGame') {
+                        _this.pieces.forEach(p => p.status = 'hidden');
+                        _this.currentPieceIndex = null;
+                        _this.animatingPiece = false;
+                        _this.animatingPieceIndex = null;
+                        _this.showQuestion = false;
+                        _this.showAnswer = false;
+                        _this.showFullImage = false;
+                        _this.showFinalTimer = false;
+                        _this.counterStatus = false;
+
+                        if (_this.intervalId) {
+                            clearInterval(_this.intervalId);
+                            _this.intervalId = null;
+                        }
+                        if (_this.finalIntervalId) {
+                            clearInterval(_this.finalIntervalId);
+                            _this.finalIntervalId = null;
+                        }
+                        _this.stopBGM();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

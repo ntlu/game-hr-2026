@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="./vue-2.6.10.js"></script>
+    <title>UI Điều Khiển R5</title>
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .grid-btns {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .q-btn {
+            font-size: 20px;
+            font-weight: bold;
+            height: 60px;
+        }
+
+        .q-btn.active {
+            border: 3px solid #000;
+            transform: scale(1.05);
+        }
+
+        .controls-panel {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="container">
+        <h2 class="mb-4">R5: GIẢI MÃ BÍ ẨN - BẢNG ĐIỀU KHIỂN</h2>
+
+        <div class="row">
+            <!-- Left side: Question Selection -->
+            <div class="col-md-6">
+                <div class="controls-panel">
+                    <h4 class="mb-3">1. Chọn Ô Số</h4>
+                    <div class="grid-btns">
+                        <button v-for="(piece, index) in pieces" :key="index" class="btn q-btn" :class="{
+                'btn-primary': piece.status === 'hidden',
+                'btn-danger': piece.status === 'locked',
+                'btn-secondary': piece.status === 'solved',
+                'active': activeIndex === index
+              }" @click="openQuestion(index)">
+                            {{ index + 1 }}
+                        </button>
+                    </div>
+                    <p class="text-muted"><small>Xanh: Sẵn sàng | Đỏ: Đã trả lời sai (Khóa) | Xám: Đã giải (Mở)</small>
+                    </p>
+                </div>
+
+                <div class="controls-panel" v-if="activeIndex !== null">
+                    <h4 class="mb-3 text-primary">Điều khiển ô số {{ activeIndex + 1 }}</h4>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <input type="number" class="form-control" v-model.number="second15" style="max-width: 80px;">
+                        <button @click="sendCmd('startTimer', second15)" class="btn btn-warning fw-bold">Bắt đầu đếm
+                            ngược ({{second15}}s)</button>
+                        <button @click="sendCmd('showAnswer')" class="btn btn-info fw-bold">Hiển thị đáp án</button>
+                    </div>
+                    <hr>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button @click="markCorrect()" class="btn btn-success fw-bold">Trả lời ĐÚNG (Mở ô)</button>
+                        <button @click="markIncorrect()" class="btn btn-danger fw-bold">Trả lời SAI (Khóa ô)</button>
+                        <button @click="closeQuestion()" class="btn btn-secondary">Đóng / Hủy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right side: Global Actions & Scores -->
+            <div class="col-md-6">
+                <div class="controls-panel">
+                    <h4 class="mb-3">2. Điều khiển hình ảnh bí ẩn</h4>
+                    <div class="d-flex gap-2 mb-3">
+                        <input type="number" class="form-control" v-model.number="second30" style="max-width: 80px;">
+                        <button @click="sendCmd('startFinalTimer', second30)" class="btn btn-warning fw-bold">Đếm ngược
+                            {{second30}}s (Hình ảnh lớn)</button>
+                        <button @click="sendCmd('revealImage')" class="btn btn-success fw-bold">Mở toàn bộ hình ảnh (MC
+                            đọc lệnh)</button>
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <h4 class="mb-3 text-danger">3. Làm lại từ đầu (Reset)</h4>
+                    <button @click="resetGame()" class="btn btn-danger fw-bold w-100 py-3">RESET TOÀN BỘ TRẠNG THÁI
+                        GAME</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                pieces: Array.from({ length: 20 }, () => ({ status: 'hidden' })),
+                activeIndex: null,
+                second15: 15,
+                second30: 30
+            },
+            methods: {
+                sendCmd(cmd, data = null) {
+                    const channel = new BroadcastChannel('myChannelR5');
+                    channel.postMessage({ message: { cmd: cmd, data: data } });
+                    console.log(cmd, data);
+                },
+                openQuestion(index) {
+                    this.activeIndex = index;
+                    this.sendCmd('openQuestion', index);
+                },
+                markCorrect() {
+                    if (this.activeIndex !== null) {
+                        this.pieces[this.activeIndex].status = 'solved';
+                        this.sendCmd('markCorrect');
+                        this.activeIndex = null;
+                    }
+                },
+                markIncorrect() {
+                    if (this.activeIndex !== null) {
+                        this.pieces[this.activeIndex].status = 'locked';
+                        this.sendCmd('markIncorrect');
+                        this.activeIndex = null;
+                    }
+                },
+                closeQuestion() {
+                    this.sendCmd('closeQuestion');
+                    this.activeIndex = null;
+                },
+                resetGame() {
+                    this.pieces.forEach(p => p.status = 'hidden');
+                    this.activeIndex = null;
+                    this.sendCmd('resetGame');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

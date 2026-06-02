@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R21 Tăng tốc</title>
+  <link rel="stylesheet" href="styleR21.css" />
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="./node_modules/animate.css/animate.min.css" />
+  <script src="./vue-2.6.10.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <!-- <audio class="d-none" loop :src="audioSrc" id="audio" ref="bgm"></audio> -->
+    <!-- <audio v-if="showMiniQuestion" class="d-none" loop :src="audioSrcQuestion" id="audio" ref="bgm"></audio> -->
+    <audio class="d-none" loop :src="audioSrc" id="audio" ref="bgm"></audio>
+    <audio class="d-none" :src="sfxSrc" id="audio" ref="sfx"></audio>
+    <div class="container-fluid">
+      <video id="bg" autoplay muted loop src="../bg-video-2.mp4"></video>
+      <div class="row">
+        <div class="col-12 questionWrapper animate__animated animate__fadeIn">
+          <div v-show="counterTime" id="counterAni" class="animate__animated animate__rollIn"
+            :style="{ top: showMiniQuestion ? '83%' : '135%', left: showMiniQuestion ? '43%' : '73%', width: showMiniQuestion ? '144px' : '180px', height: showMiniQuestion ? '144px' : '180px' }">
+            <div id="outer"></div>
+            <div id="inner"></div>
+            <h3 id="counterText" style=" color: lime; font-size: 70px; margin-top: 40px; text-shadow: 1px 5px 3px #333;"
+              :style="{ color: counterTime <= 10 ? 'red' : 'lime', fontSize: showMiniQuestion ? '50px' : '70px', 'margin-top': showMiniQuestion ? '12px' : '40px' }"
+              ref="counterText" v-html="counterText"></h3>
+          </div>
+          <div v-if="showMiniQuestion" style=" width: 100%; height: 100%;">
+            <div class="container-small-question">
+              <video id="bg-question" class="blur" autoplay muted loop src="../bg-video-2.mp4"></video>
+              <div class="row">
+                <div class="col-12 questionWrapper animate__animated animate__fadeIn">
+                  <!-- CÂU badge -->
+                  <div class="questionBadge">CÂU {{currentQIndex + 1}}</div>
+
+                  <div id="questionHolder">
+                    <!-- cau hoi -->
+                    <span class="questions animate__animated animate__zoomIn">{{questionDB[currentQIndex].q}}</span>
+                    <!-- tra loi -->
+                    <span v-if="answerStatus" class="correctAnswer animate__animated animate__bounceInDown">Đáp án:
+                      {{questionDB[currentQIndex].ans}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="imageLogoTangToc" :style="{ right: showMiniQuestion ? '33%' : '0%', top: (counterTime || showMiniQuestion) ? '2%' : '37.5vh' }"></div>
+          <div id="containerQuestion">
+            <div class="row" style="flex-direction: column;">
+              <div class="grid-container">
+                <div v-for="(question, index) in questionDB" :key="index" class="grid-item" :class="{ 
+                      'animate-balloon-pop': animateColor && currentQIndex === index 
+                    }"
+                  :style="{ animation: 'floatingBalloon ' + (2.5 + (index % 3) * 0.5) + 's ease-in-out infinite alternate', animationDelay: (index * 0.1) + 's' }">
+                  <img style="width: 75%;" :src="question.img" :alt="question.stt"
+                    :style="{ filter: grayscaleStatus[index] ? 'grayscale(1) brightness(0.6)' : `hue-rotate(${index * 35}deg)` }">
+                  <div class="number-overlay" :style="{ opacity: grayscaleStatus[index] ? 0.5 : 1 }">
+                    {{ index + 1 }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="./r21.js"></script>
+<script>
+  const vm = new Vue({
+    el: '#app',
+    data: () => ({
+      tickerInterval: null,
+      counterText: '00:00',
+      counterColor: 'lime',
+      counterFontSize: '40px',
+      counterTime: 0,
+      sfxSrc: '../end.mp3',
+      audioSrc: '../nhac-game.mp3',
+      audioSrcQuestion: '../bgm_1.mp3',
+      // audioSrc: '../bgm_intro_1.weba',
+      answerTrue: '../TrueC.mp3',
+      answerWrong: '../wrongC.mp3',
+      questionDB: qDB,
+      currentQIndex: 0,
+      answerStatus: false,
+      counterStatus: false,
+      trueAnswer: false,
+      wrongAnswer: false,
+      showMiniQuestion: false,
+      intervalId: null,
+
+      animateColor: false,
+      isGrayscale: false,
+      grayscaleStatus: [],
+
+    }),
+    methods: {
+      updateCurrentQIndex(data) {
+        this.animateColor = true;
+        this.currentQIndex = data;
+        setTimeout(() => {
+          this.showMiniQuestion = true;
+        }, 1000); // Hiện câu hỏi ngay lúc bóng nổ (khoảng 0.85s)
+        setTimeout(() => {
+          this.animateColor = false;
+        }, 3000);
+      },
+      checkTrue() {
+        this.trueAnswer = true;
+
+        // Thêm lớp 'checkedTrue' vào .grid-item tương ứng với currentQIndex
+        var gridItem = document.querySelector(".grid-item:nth-child(" + (this.currentQIndex + 1) + ")");
+        if (gridItem) {
+          gridItem.classList.remove("checkedWrong");
+          gridItem.classList.add("checkedTrue");
+        }
+        this.showMiniQuestion = false;
+      },
+      checkWrong() {
+        this.wrongAnswer = true;
+        // Thêm lớp 'checkedWrong' vào .grid-item tương ứng với currentQIndex
+        var gridItem = document.querySelector(".grid-item:nth-child(" + (this.currentQIndex + 1) + ")");
+        if (gridItem) {
+          gridItem.classList.remove("checkedTrue");
+          gridItem.classList.add("checkedWrong");
+        }
+        this.showMiniQuestion = false;
+      },
+
+      createGridItems() {
+        // Lấy tham chiếu đến .grid-container
+        var gridContainer = document.querySelector(".grid-container");
+
+        for (var i = 0; i < this.questionDB.length; i++) {
+          var gridItem = document.createElement("div");
+          gridItem.classList.add("grid-item");
+          var stt = document.createElement("span");
+
+          var sttText = this.questionDB[i].stt;
+          stt.appendChild(document.createTextNode(sttText));
+
+          gridContainer.appendChild(gridItem);
+        }
+      },
+
+      showCorrectAnswer() {
+        this.setCorrectAns(this.questionDB[this.currentQIndex].r);
+      },
+      setCorrectAns(tg) {
+        // tg as : A | B | C | D
+        document.querySelectorAll('.ansPanel').forEach((el) => el.classList.remove('correct'));
+        let _tg = `ans_${tg}`;
+        this.$refs[_tg].classList.add('correct', 'animate__rubberBand');
+        setTimeout(() => {
+          this.$refs[_tg].classList.remove('animate__rubberBand');
+        }, 1000);
+      },
+      playBGM(fileName) {
+        this.audioSrc = fileName;
+        this.$refs['bgm'].src = this.audioSrc;
+        this.$refs['bgm'].play();
+      },
+      playSFX(fileName) {
+        this.sfxSrc = fileName;
+        this.$refs['sfx'].src = this.sfxSrc;
+        this.$refs['sfx'].play();
+      },
+
+      stopBGM() {
+        this.$refs['bgm'].pause();
+        this.$refs['bgm'].currentTime = 0;
+      },
+
+      updateCounterDisplay() {
+        if (this.counterTime > 60) {
+          this.counterFontSize = '23px';
+          this.counterColor = 'lime';
+
+          // Tính toán phút và giây còn lại
+          const minutes = Math.floor(this.counterTime / 60);
+          let remainingSeconds = this.counterTime % 60;
+          if (remainingSeconds < 10) {
+            remainingSeconds = `0${remainingSeconds}`;
+          }
+          this.counterText = `${minutes}:${remainingSeconds}`;
+        } else {
+          this.counterFontSize = '38px';
+          if (this.counterTime < 10) {
+            this.counterColor = 'red';
+          }
+          this.counterText = `${this.counterTime}`;
+        }
+      },
+      startCountdown(seconds) {
+        // Ngừng setInterval cũ (nếu có)
+        if (this.intervalId !== null) {
+          clearInterval(this.intervalId);
+          this.intervalId = null;
+        }
+
+        this.counterTime = true;
+        // this.playBGM(this.audioSrc);
+        this.playBGM(this.showMiniQuestion ? this.audioSrcQuestion : this.audioSrc);
+        this.counterTime = seconds;
+
+        // Cập nhật hiển thị ban đầu
+        this.updateCounterDisplay();
+
+        // Bắt đầu lần đếm mới
+        this.intervalId = setInterval(() => {
+          this.counterTime--;
+
+          if (this.counterTime <= 0) {
+            // Ngừng và đặt lại biến intervalId
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+            this.counterTime = false;
+            this.stopBGM();
+            this.playSFX('../end.mp3');
+          } else {
+            this.updateCounterDisplay();
+          }
+        }, 1000);
+      },
+      receiveMessage(event) {
+        console.log(event.data);
+      },
+    },
+
+    created() {
+      this.grayscaleStatus = this.questionDB.map(() => false);
+      let _this = this;
+      let audioTrue = '../dung.mp3'
+      let audioWrong = '../sai.mp3'
+      let abcd = '../correct.mp3'
+      const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+      channel.addEventListener('message', (event) => {
+        console.log(event.data);
+        let _cmd = event.data.message.cmd;
+        let _data = event.data.message.data;
+        if (_cmd === 'showMiniQuestionR21') {
+          this.answerStatus = false;
+          _this.updateCurrentQIndex(_data);
+        }
+        if (_cmd === 'showAnswerR21') {
+          this.answerStatus = true;
+        }
+        if (_cmd === 'checkAnswerTrueR21') {
+          const audio = new Audio(audioTrue);
+          audio.play();
+        }
+        if (_cmd === 'checkAnswerWrongR21') {
+          const audio = new Audio(audioWrong);
+          audio.play();
+        }
+        if (_cmd === 'startCountdownR21') {
+          _this.startCountdown(_data);
+        }
+        if (_cmd === 'showCorrectAnswerR21') {
+          _this.showCorrectAnswer();
+        }
+
+        if (_cmd === 'offMiniQuestion1R21' && _data === 0) {
+          _this.checkWrong();
+          _this.showMiniQuestion = false;
+          this.answerStatus = false;
+          this.grayscaleStatus[this.currentQIndex] = true; // Đặt true cho câu được chọn
+          this.isGrayscale = this.grayscaleStatus[this.currentQIndex];
+          _this.counterTime = false;
+        }
+        if (_cmd === 'offMiniQuestionR21') {
+          this.answerStatus = false;
+          _this.showMiniQuestion = false;
+
+        }
+      });
+    },
+    mounted() {
+      this.createGridItems();
+    }
+  });
+</script>
+
+</html>
+
+<style>
+  #imageLogoTangToc {
+    background-image: url(../tang-toc2.png);
+    background-size: contain;
+    position: absolute;
+    right: 0%;
+    width: 35vw;
+    height: 25vh;
+    background-repeat: no-repeat;
+    background-position: center center;
+    z-index: 10;
+    transition: right 0.5s ease-in-out, top 1s ease-in-out;
+    animation: floatAndPulse 4s ease-in-out infinite;
+  }
+
+  @keyframes floatAndPulse {
+    0% {
+      transform: translateY(0px) scale(1);
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
+    }
+
+    50% {
+      transform: translateY(-8px) scale(1.03);
+      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+    }
+
+    100% {
+      transform: translateY(0px) scale(1);
+      filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.2));
+    }
+  }
+
+  #containerQuestion {
+    top: -40px;
+    width: 40vw;
+    height: 25vh;
+    left: 3%;
+    margin: 19px -12px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 100px);
+    grid-template-rows: repeat(6, 100px);
+    gap: 15px 10px;
+    /* Khoảng cách giữa các ô */
+    position: absolute;
+    top: 35%;
+    left: -3%;
+  }
+
+  .number-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(255, 255, 255);
+    font-size: 45px;
+    font-weight: bold;
+    -webkit-text-stroke: 3px rgb(0, 0, 0);
+    /* Viền trắng xung quanh số */
+  }
+
+  .animate-color-change {
+    animation: colorChange 3s forwards;
+  }
+
+  .animate-balloon-pop {
+    animation: balloonPop 1.9s ease-out forwards !important;
+    z-index: 50;
+    /* Bring above other balloons during animation */
+  }
+
+  @keyframes balloonPop {
+    0% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+
+    20% {
+      transform: scale(1.2) rotate(10deg);
+      filter: brightness(1.5);
+    }
+
+    40% {
+      transform: scale(0.9) rotate(-10deg);
+      filter: brightness(1);
+    }
+
+    60% {
+      transform: scale(2.5);
+      filter: brightness(3) drop-shadow(0 0 20px #fff);
+      opacity: 0.9;
+    }
+
+    100% {
+      transform: scale(3.5);
+      filter: brightness(0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes floatingBalloon {
+    0% {
+      transform: translate(0px, 0px);
+    }
+
+    /* 33% {
+      transform: translate(-7px, -7px);
+    } */
+
+    50% {
+      transform: translate(5px, -14px);
+    }
+
+    100% {
+      transform: translate(0px, -20px);
+    }
+  }
+
+  .grid-item {
+    position: relative;
+    text-align: center;
+  }
+
+  .grid-item.checkedTrue {
+    background-color: orange;
+  }
+
+  .grid-item.checkedTrue .stt {
+    color: #ffffff;
+  }
+
+  /* .grid-item.checkedWrong {
+    background-color: gray;
+  } */
+  .grid-item.checkedWrong .stt {
+    color: #000;
+  }
+
+
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  video#bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    filter: blur(7px);
+  }
+
+  video#bg-question {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    object-fit: cover;
+    z-index: -1;
+    filter: blur(7px);
+  }
+
+  .questionWrapper {
+    position: relative;
+  }
+
+  #questionHolder {
+    background: linear-gradient(135deg, rgba(8, 25, 70, .88), rgba(25, 10, 80, .88));
+    border: 4px solid rgba(100, 150, 255, 0.8);
+    box-shadow: 0 0 20px rgba(0, 255, 255, .3), 0 0 50px rgba(140, 0, 255, .3), inset 0 0 25px rgba(0, 255, 255, .1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    clip-path: polygon(6% 0, 94% 0, 100% 18%, 100% 82%, 94% 100%, 6% 100%, 0 82%, 0 18%);
+    width: 100%;
+    max-width: calc(65vh * (1705 / 726));
+    margin: 200px auto 0;
+    padding: 60px 40px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    animation: pulseBorderOrange 4s infinite alternate;
+    z-index: 20;
+    min-height: 400px;
+  }
+
+  #questionHolder::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 243, 255, 0.05) 51%);
+    background-size: 100% 8px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes pulseBorderOrange {
+    0% {
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 15px rgba(0, 255, 255, 0.2);
+    }
+
+    100% {
+      box-shadow: 0 0 45px rgba(0, 255, 255, 0.8), inset 0 0 25px rgba(0, 255, 255, 0.5);
+    }
+  }
+
+  .questionBadge {
+    position: absolute;
+    top: 170px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, #ff007f, #7928ca);
+    color: #ffffff;
+    padding: 8px 45px;
+    font-size: 28px;
+    font-weight: 900;
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
+    text-transform: uppercase;
+    box-shadow: 0 0 25px rgba(255, 0, 127, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    z-index: 30;
+    letter-spacing: 4px;
+    clip-path: polygon(15% 0, 85% 0, 100% 50%, 85% 100%, 15% 100%, 0% 50%);
+  }
+
+  .questions {
+    width: 90%;
+    text-align: center;
+    font-size: clamp(38px, 5.4vh, 50px) !important;
+    font-weight: bold;
+    color: #ffffff !important;
+    font-family: 'Montserrat', 'Segoe UI', arial, sans-serif;
+    text-shadow: 0 0 10px rgba(255, 255, 255, .3), 0 0 25px rgba(0, 255, 255, .25), 0 4px 8px rgba(0, 0, 0, .8);
+    line-height: 1.4;
+    z-index: 10;
+  }
+
+  .correctAnswer {
+    width: 85%;
+    margin-top: 40px;
+    padding: 20px 40px;
+    font-family: 'Montserrat', 'Segoe UI', arial, sans-serif;
+    text-align: center;
+    font-size: 38px !important;
+    font-weight: bold;
+    color: #ffffff !important;
+    background: rgba(0, 255, 100, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 3px solid #00ff64;
+    clip-path: polygon(4% 0, 96% 0, 100% 50%, 96% 100%, 4% 100%, 0% 50%);
+    box-shadow: 0 0 35px rgba(0, 255, 100, 0.8), inset 0 0 25px rgba(0, 255, 100, 0.5);
+    text-shadow: 0 0 15px #00ff64, 0 3px 5px rgba(0, 0, 0, 0.9);
+    animation: correctPulse 1s infinite alternate;
+    z-index: 10;
+  }
+
+  @keyframes correctPulse {
+    0% {
+      box-shadow: 0 0 20px rgba(0, 255, 100, 0.5), inset 0 0 15px rgba(0, 255, 100, 0.3);
+    }
+
+    100% {
+      box-shadow: 0 0 60px rgba(0, 255, 100, 1), inset 0 0 35px rgba(0, 255, 100, 0.8);
+    }
+  }
+
+  div#counterAni {
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(#0dcaf06b, #681bff);
+    position: absolute;
+    top: 140%;
+    left: 73%;
+    border-radius: 100%;
+    text-align: center;
+    z-index: 99;
+  }
+
+  div#outer {
+    background: url(../outer_counter.png);
+    width: 200%;
+    height: 200%;
+    top: -50% !important;
+    left: -50% !important;
+    background-size: contain;
+    position: absolute;
+    background-repeat: no-repeat;
+    animation: rotateClockwise 10s ease-in-out infinite;
+  }
+
+  div#inner {
+    background: url(../inner_counter.png);
+    width: 200%;
+    height: 200%;
+    top: -50% !important;
+    left: -50% !important;
+    background-size: contain;
+    position: absolute;
+    background-repeat: no-repeat;
+    animation: counterClockwise 5s ease-in-out infinite;
+  }
+
+  @keyframes rotateClockwise {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes counterClockwise {
+    0% {
+      transform: rotate(360deg);
+    }
+
+    50% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .ansPanel {
+    background: url(../normal.png) no-repeat;
+    background-size: contain;
+    width: 50vw;
+    height: 167px;
+    margin: -30px 0 0 0;
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .ansPanel.correct {
+    background-image: url(../correct2.png);
+  }
+
+  .innerText {
+    position: relative;
+    width: 70%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 0 auto;
+  }
+
+  .showCorrectAnswer {
+    font-size: 50px !important;
+    margin-top: 2%;
+  }
+
+  .expand-fullscreen {
+    position: fixed;
+    top: 25%;
+    left: 5%;
+    object-fit: cover;
+    z-index: 1000;
+    animation: expandAnimation 2s forwards;
+  }
+
+  @keyframes expandAnimation {
+    from {
+      transform: scale(1);
+    }
+
+    to {
+      transform: scale(1.5);
+    }
+  }
+</style>

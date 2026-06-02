@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="./vue-2.6.10.js"></script>
+    <title>UI Music</title>
+</head>
+
+<body>
+    <div id="app" class="container">
+        <div class="row mt-3">
+            <div class="col-2">
+                <button @click="sendCmd(0)" class="btn btn-primary">Nhạc 1</button>
+            </div>
+            <div class="col-2">
+                <button @click="sendCmd(1)" class="btn btn-primary">Nhạc 2</button>
+            </div>
+            <div class="col-2">
+                <button @click="sendCmd(2)" class="btn btn-primary">Nhạc 3</button>
+            </div>
+            <div class="col-2">
+                <button @click="sendCmd(3)" class="btn btn-primary">Nhạc game 1</button>
+            </div>
+            <div class="col-2">
+                <button @click="sendCmd(4)" class="btn btn-primary">Nhạc game 2</button>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-3">
+                <button @click="hideAllTeams()" class="btn btn-secondary w-100">MAIN-VIDEO</button>
+            </div>
+            <div class="col-3">
+                <button @click="showAllTeams()" class="btn btn-success w-100">Hiển thị tất cả đội</button>
+            </div>
+            <div class="col-3">
+                <button @click="hengapbanket()" class="btn btn-warning w-100">Hẹn gặp BÁN KẾT</button>
+            </div>
+            <div class="col-3">
+                <button @click="hengapchungket()" class="btn btn-danger w-100">Hẹn gặp CHUNG KẾT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                second: 10,
+            },
+            methods: {
+                sendCmd(tabIndex) {
+                    const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+                    channel.postMessage({ message: { cmd: 'playMusic', data: tabIndex } }); // Send the message
+                    console.log(`Clicked Tab ${tabIndex}`);
+                },
+                showAllTeams() {
+                    const channel = new BroadcastChannel('myChannel');
+                    channel.postMessage({ message: { cmd: 'showAllTeams', data: null } });
+                    console.log(`Command showAllTeams sent`);
+                },
+                hideAllTeams() {
+                    const channel = new BroadcastChannel('myChannel');
+                    channel.postMessage({ message: { cmd: 'hideAllTeams', data: null } });
+                    console.log(`Command hideAllTeams sent`);
+                },
+                hengapbanket() {
+                    const channel = new BroadcastChannel('myChannel');
+                    channel.postMessage({ message: { cmd: 'hengapbanket', data: null } });
+                    console.log(`Command hengapbanket sent`);
+                },
+                hengapchungket() {
+                    const channel = new BroadcastChannel('myChannel');
+                    channel.postMessage({ message: { cmd: 'hengapchungket', data: null } });
+                    console.log(`Command hengapchungket sent`);
+                },
+            },
+        });
+    </script>
+</body>
+
+</html>

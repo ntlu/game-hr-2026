@@ -1,0 +1,15 @@
+{
+  "name": "Round_1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "animate.css": "^4.1.1",
+    "boostrap": "^2.0.0",
+    "bootstrap": "5.2.3",
+    "puppeteer": "^25.1.0",
+    "socket.io": "^4.7.2",
+    "vue": "^3.3.4",
+    "vuejs": "^3.0.1"
+  }
+}

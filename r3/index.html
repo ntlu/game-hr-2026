@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R3 Tâm đầu ý hợp</title>
+  <link rel="stylesheet" href="styleR6.css" />
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="./node_modules/animate.css/animate.min.css" />
+  <script src="./vue-2.6.10.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <audio class="d-none" loop :src="audioSrc" id="audio" ref="bgm"></audio>
+    <audio class="d-none" :src="sfxSrc" id="audio" ref="sfx"></audio>
+    <div class="container-fluid p-0 m-0" style="width: 100vw; height: 100vh; overflow: hidden; position: relative;">
+      <video autoplay muted loop src="../tam-dau-y-hop.mp4"
+        style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 0;"></video>
+      <div v-if="showMiniQuestion" class="row m-0 w-100 h-100 animate__animated animate__fadeIn"
+        style="position: absolute; top: 0; left: 0; z-index: 1; background: rgba(0,0,0,0.5);">
+        <div class="col-12 p-0 h-100 d-flex flex-column justify-content-center align-items-center">
+          <div id="questionHolder">
+            <span v-if="currentQIndex >= 0" class="topic-title">
+              BỘ TỪ KHÓA SỐ {{currentQIndex + 1}}
+            </span>
+            <div class="word-grid animate__animated animate__zoomIn">
+              <div v-for="(word, index) in questionDB[currentQIndex].words" :key="index" class="word-item"
+                :class="{'word-correct': correctWords.includes(index)}">
+                <span class="word-index">{{ index + 1 }}.</span> <span class="word-text">{{ word }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-show="counterStatus" id="counterAni" class="animate__animated animate__rollIn" style="z-index: 10;">
+        <div id="outer"></div>
+        <div id="inner"></div>
+        <h3 id="counterText" :style="{ color: counterColor, fontSize: counterFontSize }" ref="counterText"
+          v-html="counterText"></h3>
+      </div>
+    </div>
+  </div>
+
+</body>
+<script src="./r3.js"></script>
+<script>
+
+  const vm = new Vue({
+    el: '#app',
+    data: () => ({
+      tickerInterval: null,
+      counterText: '00:00',
+      counterColor: 'lime',
+      counterFontSize: '40px',
+      counterTime: 0,
+      audioSrc: '../bgm_1.mp3',
+      sfxSrc: '../end.mp3',
+      questionDB: qDB,
+      currentQIndex: 0,
+      correctWords: [],
+      answerStatus: false,
+      counterStatus: false,
+      counterTimeBigImg: false,
+
+      correctAnswerBigImg: 'Đây là đáp án đúng',
+      trueAnswer: false,
+      wrongAnswer: false,
+
+      showMiniQuestion: false,
+
+      intervalId: null,
+    }),
+    methods: {
+      updateCurrentQIndex(data) {
+        this.currentQIndex = data;
+        this.correctWords = [];
+        this.showMiniQuestion = true;
+      },
+      playBGM(fileName) {
+        this.audioSrc = fileName;
+        this.$refs['bgm'].src = this.audioSrc;
+        this.$refs['bgm'].play();
+      },
+      playSFX(fileName) {
+        this.sfxSrc = fileName;
+        this.$refs['sfx'].src = this.sfxSrc;
+        this.$refs['sfx'].play();
+      },
+      stopBGM() {
+        this.$refs['bgm'].pause();
+        this.$refs['bgm'].currentTime = 0;
+      },
+      startCounting(seconds) {
+        // Ngừng setInterval cũ (nếu có)
+        if (this.intervalId !== null) {
+          clearInterval(this.intervalId);
+          this.intervalId = null;
+        }
+
+        this.counterStatus = true;
+        this.playBGM(this.audioSrc);
+        this.counterTime = seconds;
+
+        // Cập nhật hiển thị ban đầu
+        this.updateCounterDisplay();
+
+        // Bắt đầu lần đếm mới
+        this.intervalId = setInterval(() => {
+          this.counterTime--;
+
+          if (this.counterTime <= 0) {
+            // Ngừng và đặt lại biến intervalId
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+            this.counterStatus = false;
+            this.stopBGM();
+            this.playSFX('../end.mp3');
+          } else {
+            this.updateCounterDisplay();
+          }
+        }, 1000);
+      },
+      updateCounterDisplay() {
+        if (this.counterTime > 60) {
+          this.counterFontSize = '40px';
+          this.counterColor = 'lime';
+
+          // Tính toán phút và giây còn lại
+          const minutes = Math.floor(this.counterTime / 60);
+          let remainingSeconds = this.counterTime % 60;
+          if (remainingSeconds < 10) {
+            remainingSeconds = `0${remainingSeconds}`;
+          }
+          this.counterText = `${minutes}:${remainingSeconds}`;
+        } else {
+          this.counterFontSize = '40px';
+          if (this.counterTime < 10) {
+            this.counterColor = 'red';
+          }
+          this.counterText = `${this.counterTime}`;
+        }
+      },
+
+      receiveMessage(event) {
+        console.log(event.data);
+      },
+    },
+
+    created() {
+      let _this = this;
+      const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+      channel.addEventListener('message', (event) => {
+        console.log(event.data);
+        let _cmd = event.data.message.cmd;
+        let _data = event.data.message.data;
+
+        if (_cmd === 'showMiniQuestionR6') {
+          _this.updateCurrentQIndex(_data);
+        }
+
+        if (_cmd === 'startCountingMiniQuestionR6') {
+          _this.startCounting(_data);
+        }
+
+        if (_cmd === 'nextQuestionR6') {
+          _this.nextQuestion();
+        }
+
+        if (_cmd === 'markCorrectR3') {
+          if (_this.correctWords.includes(_data)) {
+            _this.correctWords = _this.correctWords.filter(idx => idx !== _data);
+          } else {
+            _this.correctWords.push(_data);
+          }
+        }
+
+
+        if (_cmd === 'offMiniQuestionR6') {
+          _this.showMiniQuestion = false;
+        }
+
+      });
+    },
+    mounted() {
+      // Logic removed
+    }
+  });
+</script>
+
+</html>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #questionHolder {
+    background: rgba(10, 15, 30, 0.95);
+    border: 3px solid #00f3ff;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.6), inset 0 0 20px rgba(0, 243, 255, 0.3);
+    padding: 40px;
+    width: 96%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .topic-title {
+    margin-bottom: 20px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #00f3ff;
+    text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
+    text-transform: uppercase;
+  }
+
+  .word-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(5, auto);
+    gap: 15px 30px;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .word-item {
+    background: rgba(0, 243, 255, 0.1);
+    border: 2px solid rgba(0, 243, 255, 0.5);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+    text-align: left;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    display: flex;
+    align-items: center;
+  }
+
+  .word-index {
+    color: #ff00de;
+    margin-right: 15px;
+    min-width: 45px;
+  }
+
+  .word-text {
+    text-shadow: 1px 1px 3px #000;
+  }
+
+  .word-correct {
+    background: rgba(0, 255, 0, 0.4) !important;
+    border-color: #00ff00 !important;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.6) !important;
+    color: #00f3ff;
+    text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
+  }
+
+  div#counterAni {
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(#0dcaf06b, #681bff);
+    position: absolute;
+    bottom: 77%;
+    left: 84%;
+    transform: translateX(-50%);
+    border-radius: 100%;
+    text-align: center;
+  }
+
+
+  div#outer {
+    background: url(../outer_counter.png);
+    width: 200%;
+    height: 200%;
+    top: -50% !important;
+    left: -50% !important;
+    background-size: contain;
+    position: absolute;
+    background-repeat: no-repeat;
+    animation: rotateClockwise 10s ease-in-out infinite;
+  }
+
+  div#inner {
+    background: url(../inner_counter.png);
+    width: 200%;
+    height: 200%;
+    top: -50% !important;
+    left: -50% !important;
+    background-size: contain;
+    position: absolute;
+    background-repeat: no-repeat;
+    animation: counterClockwise 5s ease-in-out infinite;
+  }
+
+  @keyframes rotateClockwise {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes counterClockwise {
+    0% {
+      transform: rotate(360deg);
+    }
+
+    50% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  #counterText {
+    margin-top: 25px;
+    color: lime;
+    text-shadow: 1px 5px 3px #333;
+  }
+</style>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+  <script src="./vue-2.6.10.js"></script>
+  <title>UI R7</title>
+</head>
+
+<body>
+  <div id="app" class="container">
+    <div class="row">
+
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'showMiniQuestionR6',data: 0})" class="btn btn-primary w-100 mb-2">Chủ Đề
+          1</button>
+      </div>
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'showMiniQuestionR6',data: 1})" class="btn btn-primary w-100 mb-2">Chủ Đề
+          2</button>
+      </div>
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'showMiniQuestionR6',data: 2})" class="btn btn-primary w-100 mb-2">Chủ Đề
+          3</button>
+      </div>
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'showMiniQuestionR6',data: 3})" class="btn btn-primary w-100 mb-2">Chủ Đề
+          4</button>
+      </div>
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'showMiniQuestionR6',data: 4})" class="btn btn-primary w-100 mb-2">Chủ Đề
+          5</button>
+      </div>
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'showMiniQuestionR6',data: 5})" class="btn btn-primary w-100 mb-2">Chủ Đề
+          6</button>
+      </div>
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'showMiniQuestionR6',data: 6})" class="btn btn-primary w-100 mb-2">Chủ Đề
+          7</button>
+      </div>
+      <div class="col-3 mb-4">
+        <button @click="sendCmd({cmd: 'showMiniQuestionR6',data: 7})" class="btn btn-primary w-100 mb-2">Chủ Đề
+          8</button>
+      </div>
+
+
+      <div class="col-4">
+        <input type="number" class="form-control" v-model.number="second" />
+        <button @click="sendCmd({cmd: 'startCountingMiniQuestionR6',data: second})" class="btn btn-primary">
+          2. Thời gian đếm ngược [{{second}}]
+        </button>
+      </div>
+
+      <!-- <div class="col-3">
+          <button @click="sendCmd({cmd: 'changColorTopicR6',data: null})" class="btn btn-primary">5. Đổi màu</button>
+        </div> -->
+
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'offMiniQuestionR6',data: null})" class="btn btn-warning w-100">6. Đóng câu
+          hỏi</button>
+      </div>
+
+      <div class="col-12 mt-4 border-top pt-4">
+        <button @click="sendCmd({cmd: 'resetGameR7',data: null})" class="btn btn-danger font-weight-bold">Làm Mới (Reset
+          Toàn Bộ)</button>
+      </div>
+
+    </div>
+  </div>
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        second: 120,
+      },
+      methods: {
+        sendCmd(cmd) {
+          const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+          channel.postMessage({ message: cmd }); // Send the message
+          console.log(cmd);
+        },
+      },
+    });
+  </script>
+</body>
+
+</html>

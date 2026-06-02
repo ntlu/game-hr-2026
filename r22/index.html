@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R22</title>
+  <link rel="stylesheet" href="styleR22.css" />
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="./node_modules/animate.css/animate.min.css" />
+  <script src="./vue-2.6.10.js"></script>
+  <style>
+    /* Synthwave Cyberpunk HUD Styles */
+    .ansBadge {
+      position: absolute;
+      left: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(135deg, #00f3ff, #6d28d9);
+      color: white;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      font-weight: 900;
+      font-family: 'Montserrat', 'Segoe UI', sans-serif;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
+      border: 3px solid rgba(255, 255, 255, 0.9);
+      z-index: 5;
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      /* Hexagon badge */
+    }
+
+    .ansPanel {
+      justify-content: center !important;
+      padding-left: 50px !important;
+      margin-bottom: 10px;
+    }
+
+    .innerText {
+      width: 100% !important;
+      text-align: center !important;
+    }
+
+    .questionBadge {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, #ff007f, #7928ca);
+      color: #ffffff;
+      padding: 8px 45px;
+      font-size: 28px;
+      font-weight: 900;
+      font-family: 'Montserrat', 'Segoe UI', sans-serif;
+      text-transform: uppercase;
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      z-index: 10;
+      letter-spacing: 4px;
+      clip-path: polygon(15% 0, 85% 0, 100% 50%, 85% 100%, 15% 100%, 0% 50%);
+      /* Tech bar shape */
+    }
+
+    /* Add some HUD scanning lines to questionHolder */
+    #questionHolder::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(0, 243, 255, 0.05) 51%);
+      background-size: 100% 8px;
+      pointer-events: none;
+      z-index: 1;
+      border-radius: inherit;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <audio class="d-none" loop :src="audioSrc" id="audio" ref="bgm"></audio>
+    <audio class="d-none" :src="sfxSrc" id="audio" ref="sfx"></audio>
+    <audio class="d-none" :src="correctAudioSrc" id="audio" ref="correctAudio"></audio>
+    <div class="container-fluid">
+      <video id="bg" class="blur" autoplay muted loop src="../bg-video-2.mp4"></video>
+      <div class="row">
+        <div class="col-12 questionWrapper animate__animated animate__fadeIn">
+          <img src="../quyet-thang.png" class="roundTitle-img"
+            :class="{ 'title-center': currentQIndex < 0, 'title-top': currentQIndex >= 0 }" />
+          <div v-if="currentQIndex >= 1" class="questionBadge">
+            CÂU {{currentQIndex}}
+          </div>
+          <div id="questionHolder" v-if="currentQIndex >= 0">
+            <span :class="{'animate__animated animate__zoomIn': fadeIn}">{{questionDB[currentQIndex].q}}</span>
+          </div>
+          <div v-show="counterStatus" id="counterAni" class="animate__animated animate__rollIn">
+            <div id="outer"></div>
+            <div id="inner"></div>
+            <h3 id="counterText" :style="{ color: counterColor, fontSize: counterFontSize }" ref="counterText"
+              v-html="counterText"></h3>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 50px; margin-top: 1%;">
+          <div v-if="currentQIndex >= 0 && answerStatus" class="col-5 ansHolder animate__animated animate__zoomIn">
+            <ul class="list-unstyled">
+              <li ref="ans_a" class="ansPanel animate__animated">
+                <div class="ansBadge">A</div>
+                <div class="innerText"
+                  style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 100%;">
+                  <img :src="`./static/${currentQIndex + 1}-A.png`"
+                    style="max-height: 99%; max-width: 99%; object-fit: contain; border-radius: 8px;" />
+                </div>
+              </li>
+              <li ref="ans_c" class="ansPanel animate__animated">
+                <div class="ansBadge">C</div>
+                <div class="innerText"
+                  style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 100%;">
+                  <img :src="`./static/${currentQIndex + 1}-C.png`"
+                    style="max-height: 99%; max-width: 99%; object-fit: contain; border-radius: 8px;" />
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div v-if="currentQIndex >= 0 && answerStatus" class="col-5 ansHolder animate__animated animate__zoomIn">
+            <ul class="list-unstyled">
+              <li ref="ans_b" class="ansPanel animate__animated">
+                <div class="ansBadge">B</div>
+                <div class="innerText"
+                  style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 100%;">
+                  <img :src="`./static/${currentQIndex + 1}-B.png`"
+                    style="max-height: 99%; max-width: 99%; object-fit: contain; border-radius: 8px;" />
+                </div>
+              </li>
+              <li ref="ans_d" class="ansPanel animate__animated">
+                <div class="ansBadge">D</div>
+                <div class="innerText"
+                  style="display: flex; align-items: center; justify-content: center; gap: 10px; height: 100%;">
+                  <img :src="`./static/${currentQIndex + 1}-D.png`"
+                    style="max-height: 99%; max-width: 99%; object-fit: contain; border-radius: 8px;" />
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="./r22.js"></script>
+<!-- <script src="./demo_cn.js"></script> -->
+<script>
+
+  const vm = new Vue({
+    el: '#app',
+    data: () => ({
+      roundName: 'KHỞI ĐỘNG',
+      tickerInterval: null,
+      counterText: '00:00',
+      counterColor: 'lime',
+      counterFontSize: '23px',
+      counterTime: 0,
+      audioSrc: '../bgm_1.mp3',
+      sfxSrc: '../end.mp3',
+      correctAudioSrc: '../correct.mp3',
+      questionDB: qDB,
+      currentQIndex: -1,
+      answerStatus: true,
+      counterStatus: false,
+      fadeIn: false,
+
+      intervalId: null,
+    }),
+    methods: {
+      // nextQuestion() {
+      //   this.currentQIndex++;
+      //   this.answerStatus = false;
+      //   document.querySelectorAll('.ansPanel').forEach((el) => el.classList.remove('correct'));
+      // },
+      nextQuestion() {
+        this.fadeIn = false; // Đặt fadeIn thành false trước khi thay đổi câu hỏi
+        setTimeout(() => {
+          this.currentQIndex++;
+          this.answerStatus = true;
+          document.querySelectorAll('.ansPanel').forEach((el) => el.classList.remove('correct'));
+          this.fadeIn = true; // Đặt fadeIn thành true sau khi thay đổi câu hỏi
+        }, 100); // Thêm delay nhỏ để đảm bảo hiệu ứng hoạt động
+      },
+      showAnswer() {
+        this.answerStatus = !this.answerStatus;
+      },
+      showCorrectAnswer() {
+        this.setCorrectAns(this.questionDB[this.currentQIndex].r);
+      },
+      setCorrectAns(tg) {
+        const keys = ['a', 'b', 'd', 'c'];
+        let startIndex = Math.floor(Math.random() * 4);
+        let currentStep = 0;
+
+        let stepsArray = [];
+        let cur = startIndex;
+        for (let i = 0; i < 12; i++) {
+          stepsArray.push(keys[cur % 4]);
+          cur++;
+        }
+        while (keys[cur % 4] !== tg) {
+          stepsArray.push(keys[cur % 4]);
+          cur++;
+        }
+        stepsArray.push(tg);
+
+        let speed = 100;
+
+        const runLight = () => {
+          document.querySelectorAll('.ansPanel').forEach((el) => {
+            el.classList.remove('correct', 'highlight');
+          });
+
+          if (currentStep < stepsArray.length - 1) {
+            let key = stepsArray[currentStep];
+            if (this.$refs[`ans_${key}`]) {
+              this.$refs[`ans_${key}`].classList.add('highlight');
+            }
+
+            if (currentStep > stepsArray.length - 4) {
+              speed += 80;
+            } else if (currentStep > stepsArray.length - 8) {
+              speed += 30;
+            }
+
+            currentStep++;
+            setTimeout(runLight, speed);
+          } else {
+            let _tg = `ans_${tg}`;
+            if (this.$refs[_tg]) {
+              this.$refs[_tg].classList.add('correct', 'animate__rubberBand');
+              this.playCorrectAudioSrc('../correct.mp3');
+              setTimeout(() => {
+                this.$refs[_tg].classList.remove('animate__rubberBand');
+              }, 1000);
+            }
+          }
+        };
+
+        runLight();
+      },
+      playBGM(fileName) {
+        this.audioSrc = fileName;
+        this.$refs['bgm'].src = this.audioSrc;
+        this.$refs['bgm'].play();
+      },
+      playSFX(fileName) {
+        this.sfxSrc = fileName;
+        this.$refs['sfx'].src = this.sfxSrc;
+        this.$refs['sfx'].play();
+      },
+      playCorrectAudioSrc(fileName) {
+        this.correctAudioSrc = fileName;
+        this.$refs['sfx'].src = this.correctAudioSrc;
+        this.$refs['sfx'].play();
+      },
+      stopBGM() {
+        this.$refs['bgm'].pause();
+        this.$refs['bgm'].currentTime = 0;
+      },
+      startCounting(seconds) {
+        // Ngừng setInterval cũ (nếu có)
+        if (this.intervalId !== null) {
+          clearInterval(this.intervalId);
+          this.intervalId = null;
+        }
+
+        this.counterStatus = true;
+        this.playBGM(this.audioSrc);
+        this.counterTime = seconds;
+
+        // Cập nhật hiển thị ban đầu
+        this.updateCounterDisplay();
+
+        // Bắt đầu lần đếm mới
+        this.intervalId = setInterval(() => {
+          this.counterTime--;
+
+          if (this.counterTime <= 0) {
+            // Ngừng và đặt lại biến intervalId
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+            this.counterStatus = false;
+            this.stopBGM();
+            this.playSFX('../end.mp3');
+          } else {
+            this.updateCounterDisplay();
+          }
+        }, 1000);
+      },
+      updateCounterDisplay() {
+        if (this.counterTime > 60) {
+          this.counterFontSize = '23px';
+          this.counterColor = 'lime';
+
+          // Tính toán phút và giây còn lại
+          const minutes = Math.floor(this.counterTime / 60);
+          let remainingSeconds = this.counterTime % 60;
+          if (remainingSeconds < 10) {
+            remainingSeconds = `0${remainingSeconds}`;
+          }
+          this.counterText = `${minutes}:${remainingSeconds}`;
+        } else {
+          this.counterFontSize = '38px';
+          if (this.counterTime < 10) {
+            this.counterColor = 'red';
+          }
+          this.counterText = `${this.counterTime}`;
+        }
+      },
+      receiveMessage(event) {
+        // // Kiểm tra nguồn gốc tin nhắn
+        // if (event.origin !== 'http://localhost:3000') {
+        //   return;
+        // }
+
+        // Xử lý tin nhắn
+        console.log(event.data);
+      },
+    },
+
+    created() {
+      let _this = this;
+      const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+      channel.addEventListener('message', (event) => {
+        console.log(event.data);
+        let _cmd = event.data.message.cmd;
+        let _data = event.data.message.data;
+        if (_cmd === 'showAnswerR22') {
+          _this.showAnswer();
+        }
+        if (_cmd === 'startCountingR22') {
+          _this.startCounting(_data);
+        }
+        if (_cmd === 'nextQuestionR22') {
+          _this.nextQuestion();
+        }
+        if (_cmd === 'showCorrectAnswerR22') {
+          _this.showCorrectAnswer();
+        }
+      });
+    },
+  });
+</script>
+
+</html>

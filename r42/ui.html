@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="./vue-2.6.10.js"></script>
+    <title>UI R22</title>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <div class="row">
+        <div class="col-3 d-flex mb-3">
+          <input type="number" class="form-control" v-model.number="second" style="width: 80px;" />
+          <button @click="sendCmd({cmd: 'startCountingR22',data: second})" class="btn btn-primary">
+            2. Start countdown [{{second}}]
+          </button>
+        </div>
+
+        <!-- <div class="col-3 mb-3" v-for="index in 12" :key="index">
+          <button @click="sendCmd({cmd: 'showCorrectAnswerR22', data: 'correct' + index})" class="btn btn-primary">
+            Show correct {{ index }}
+          </button>
+        </div> -->
+
+
+        <!-- <div class="col-3">
+          <button @click="sendCmd({cmd: 'nextQuestionR22',data: null})" class="btn btn-primary">Tắt đáp án hiện tại</button>
+        </div> -->
+      </div>
+    </div>
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          second: 300,
+        },
+        methods: {
+          sendCmd(cmd) {
+            const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+            channel.postMessage({ message: cmd }); // Send the message
+            console.log(cmd);
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

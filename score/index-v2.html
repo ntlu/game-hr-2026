@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Score</title>
+  <!-- <link rel="stylesheet" href="style.css" /> -->
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="./node_modules/animate.css/animate.min.css" />
+  <script src="./vue-2.6.10.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <video id="bg" autoplay muted loop src="../bg-video-2.mp4"></video>
+    <div class="container-fluid" v-if="showTblStatus === true">
+      <img class="imgTableScore" src="./static/table-score-day2.png" alt="" />
+      
+      <ul>
+        <transition-group name="list" style="margin-top: 222px">
+          <li
+          v-for="item in items"
+          :key="item.id"
+          :style="{backgroundColor: item.isGray ? '#8a8a8a8a' : 'transparent',  color: item.isGray ? 'red' : 'inherit' }"
+          style="width: 100vw; margin-bottom: 15px;padding-left: 7%; border-bottom: 1px dotted #ffffff57; padding-bottom: 15px;"
+          >
+          <span class="teamName" :style="{ color: item.isGray ? '#e1dbdb' : 'white' }"
+          >{{ 'Đội ' + item.id + ': ' + item.name }}</span>
+          <div class="divScore" :style="{ color: item.isGray ? '#e1dbdb' : 'white' }">
+            <span class="itemsScore" style="margin-left: 20px">{{item.r1}}</span>
+            <span class="itemsScore" style="margin-left: 42px">{{item.r21}}</span>
+            <span class="itemsScore" style="margin-left: 42px">{{item.r22}}</span>
+            <span class="itemsScore" style="background-color: lime; border-radius: 5px; height: 50px; font-weight: bold; margin-left: 43px; color: rgb(218, 41, 41); text-shadow: 1px 2px 2px white; -webkit-text-stroke: thin;">{{item.totalScore}}</span>
+          </div>
+        </li>
+      </transition-group>
+    </ul>
+    <!-- <h1 style=" position: absolute;z-index: 999; color:white; font-size: 99px;" v-if="congratulateTeam === true">Chúc mừng các đội vào vòng trong!</h1> -->
+    <img src="./static/chuc-mung-3-doi.png" alt="" style=" position: absolute;z-index: 999; margin-left: 15%;
+    margin-top: -3%; animation: zoomInOut 2s alternate infinite;" v-if="congratulateTeam === true">
+  </div>
+</div>
+</body>
+
+<script>
+  const initialItems = [
+  { id: 1, name: 'PCC', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+  { id: 2, name: 'QC', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+  { id: 3, name: 'VPL', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+  { id: 4, name: 'F3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+  { id: 5, name: 'DI', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+  { id: 6, name: 'E3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+  ];
+  
+  const vm = new Vue({
+    el: '#app',
+    data: () => ({
+      items: [...initialItems], // Sao chép mảng ban đầu vào biến items
+      sorting: false,
+      
+      showTblStatus: false,
+      sortTeam: false,
+      
+      congratulateTeam:false,
+    }),
+    methods: {
+      showTbl() {
+        this.showTblStatus = !this.showTblStatus;
+      },
+      
+      sortItems() {
+        this.sorting = true;
+        this.items.sort((a, b) => b.totalScore - a.totalScore);
+        this.sorting = false;
+        
+        // Lấy 6 đội có totalScore thấp nhất
+        const lowestScoreTeams = this.items.slice(3);
+        
+        // Đánh dấu các đội này với màu xám
+        for (const team of lowestScoreTeams) {
+          team.isGray = true;
+        }
+      },
+      
+      deleteTeamsOut(){
+        if (!this.isGray) {
+          this.items = this.items.filter(team => !team.isGray);
+        }
+        this.congratulateTeam = true;
+      },
+      
+      resetItems() {
+        // Khôi phục lại mảng items ban đầu
+        this.items = [...initialItems];
+        for (const team of this.items) {
+          team.isGray = false;
+        }
+      },
+    },
+    created() {
+      let _this = this;
+      const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+      channel.addEventListener('message', (event) => {
+        console.log(event.data);
+        let _cmd = event.data.message.cmd;
+        //let _data = event.data.message.data;
+        if (_cmd === 'showTbl') {
+          _this.showTbl();
+        }
+        if (_cmd === 'showScore') {
+          this.items = event.data.message.data;
+        }
+        if (_cmd === 'sort') {
+          _this.sortItems();
+        }
+        if (_cmd === 'delete') {
+          _this.deleteTeamsOut();
+        }
+        if (_cmd === 'reset') {
+          _this.resetItems();
+          _this.congratulateTeam = false;
+        }
+      });
+    },
+    watch: {},
+    computed: {},
+  });
+</script>
+</html>
+<style>
+  #app {
+    font-family: arial;
+  }
+  .divScore {
+    display: flex;
+    color: white;
+    font-size: 35px;
+  }
+  ul {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .teamName {
+    width: 315px;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+  }
+  .itemsScore {
+    width: 100px;
+    text-align: center;
+    font-weight: 400;
+  }
+  
+  li {
+    display: flex;
+    align-items: center;
+  }
+  
+  input {
+    margin-left: 10px;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  video#bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+  video#bg.blur {
+    filter: blur(3px);
+  }
+  
+  @keyframes zoomInOut {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  .imgTableScore{
+    height: 100vh;
+    position: absolute;
+    z-index: 1;
+    left: -1px;
+  }
+</style>

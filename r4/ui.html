@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="./vue-2.6.10.js"></script>
+    <title>UI R42</title>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <div class="row">
+        <div class="col-3 my-3 d-flex">
+          <input style="max-width: 100px;" type="number" class="form-control" v-model.number="second" />
+          <button @click="sendCmd({cmd: 'startCountingR42',data: second})" class="btn btn-primary">
+           Countdown [{{second}}]
+          </button>
+        </div>
+        <div class="col-3 my-3">
+          <button @click="sendCmd({cmd: 'showTableR42',data: null})" class="btn btn-primary">
+            Ẩn / Hiển thị bảng không đáp án
+          </button> 
+        </div>
+        <div class="col-3 my-3">
+          <button @click="sendCmd({cmd: 'showAllAnswer',data: null})" class="btn btn-primary">Ẩn / hiện tất cả đáp án</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-2 my-3">
+          <button @click="sendCmd({cmd: 'showCorrectAnswerR42',data: 0})" class="btn btn-primary">
+            Hiển thị đáp án 1
+          </button>
+        </div>
+        <div class="col-2 my-3">
+          <button @click="sendCmd({cmd: 'showCorrectAnswerR42',data: 1})" class="btn btn-primary">
+            Hiển thị đáp án 2
+          </button>
+        </div>
+        <div class="col-2 my-3">
+          <button @click="sendCmd({cmd: 'showCorrectAnswerR42',data: 2})" class="btn btn-primary">
+            Hiển thị đáp án 3
+          </button>
+        </div>
+        <div class="col-2 my-3">
+          <button @click="sendCmd({cmd: 'showCorrectAnswerR42',data: 3})" class="btn btn-primary">
+            Hiển thị đáp án 4
+          </button>
+        </div>
+        <div class="col-2 my-3">
+          <button @click="sendCmd({cmd: 'hideAnswerR42',data: null})" class="btn btn-primary">tắt đáp án hiện tại</button>
+        </div>
+        
+      </div>
+    </div>
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          second: 300,
+        },
+        methods: {
+          sendCmd(cmd) {
+            const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+            channel.postMessage({ message: cmd,  }); // Send the message
+            console.log(cmd);
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

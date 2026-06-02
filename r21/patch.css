@@ -1,0 +1,47 @@
+#containerQuestion {
+  background-image: url(../tangtoc.png);
+  background-size: 100% 100%;
+  width: 100%;
+  height: 100vh;
+  max-width: calc(100vh * (4 / 3));
+  max-height: calc(100vw * (3 / 4));
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 1.5%;
+  position: absolute;
+  top: 8%;
+  left: 5%;
+  width: 63.5%;
+  height: 84.6%;
+}
+
+.grid-item {
+  position: relative;
+  text-align: center;
+  container-type: inline-size;
+}
+
+.grid-item img {
+  width: 75%;
+  height: auto;
+}
+
+.number-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgb(255, 255, 255);
+  font-size: 45cqw;
+  font-weight: bold;
+  -webkit-text-stroke: 3cqw rgb(0, 0, 0);
+}

@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Score</title>
+  <!-- <link rel="stylesheet" href="style.css" /> -->
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="./node_modules/animate.css/animate.min.css" />
+  <script src="./vue-2.6.10.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <video id="bg" autoplay muted loop src="../bg-video-2.mp4"></video>
+    <div class="container-fluid" v-if="showTblStatus === true">
+      <img style="height: 100vh;left:1px; position: absolute; z-index: 1" src="./static/table-score-day3.png" alt="" />
+      
+      <ul>
+        <transition-group name="list" style="margin-top: 200px"> 
+          <li
+          v-for="item in items"
+          :key="item.id"
+          :style="{backgroundColor: item.isGray ? '#8a8a8a8a' : 'transparent',  color: item.isGray ? 'red' : 'inherit' }"
+          style="width: 90vw; margin-bottom: 5px; border-bottom: 1px dotted #ffffff57; padding-bottom: 5px;"
+          >
+          <span class="teamName" :style="{ color: item.isGray ? '#e1dbdb' : 'white' }"
+          >{{ 'Đội ' + item.id + ': ' + item.name }}</span>
+     
+          <div class="divScore" :style="{ color: item.isGray ? '#e1dbdb' : 'white' }">
+            <span class="itemsScore" style="margin-left: -30px">{{item.r1}}</span>
+            <span class="itemsScore" style="margin-left: 50px">{{item.r21}}</span>
+            <span class="itemsScore" style="margin-left: 55px">{{item.r22}}</span>
+            <span class="itemsScore" style="background-color: lime; border-radius: 5px; height: 50px; font-weight: bold; margin-left: 61px; color: rgb(218, 41, 41); text-shadow: 1px 2px 2px white; -webkit-text-stroke: thin;">{{item.totalScore}}</span>
+          </div>
+        </li>
+      </transition-group>
+    </ul>
+    
+    <div v-if="congratulateTeam === false" style="position: absolute; z-index: 999;">
+      <img src="./static/bucnhanthuong.png" alt="" style="width: 86vw; margin-left: 7%; margin-top: -9%; position: relative; z-index: -1; animation: zoomInOut 2s alternate infinite;">
+    </div>
+    <div v-if="congratulateTeam === true" style="position: absolute; z-index: 999;">
+      <div class="divTop1">
+        <h2 class="Top1">{{scoreTop1}}</h2>
+      </div>
+      <div class="divTop2" >
+        <h2 class="Top2" >{{scoreTop2}}</h2>
+      </div>
+      <div class="divTop3">
+        <h2 class="Top3" >{{scoreTop3}}</h2>
+      </div>
+      <img src="./static/bucnhanthuong.png" alt="" style="width: 86vw; margin-left: 7%; margin-top: -9%; position: relative; z-index: -1; animation: zoomInOut 2s alternate infinite;">
+    </div>
+    
+  </div>
+</div>
+</body>
+
+<script>
+  const initialItems = [
+  { id: 1, name: 'E1 + POTH', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+  { id: 2, name: 'F3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+  { id: 3, name: 'VPL', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+  ];
+  
+  const vm = new Vue({
+    el: '#app',
+    data: () => ({
+      items: [...initialItems], // Sao chép mảng ban đầu vào biến items
+      
+      showTblStatus: false,
+      scoreTop1:"",
+      scoreTop2:"",
+      scoreTop3:"",
+      
+      congratulateTeam:false,
+    }),
+    methods: {
+      showTbl() {
+        this.showTblStatus = !this.showTblStatus;
+      },
+      
+      sortItems() {
+        // Sắp xếp mảng items theo totalScore giảm dần
+        this.items.sort((a, b) => b.totalScore - a.totalScore);
+        
+        // Lấy tên đội có totalScore lớn nhất và gán vào scoreTop1
+        if (this.items[0]) {
+          this.scoreTop1 = this.items[0].name;
+        }
+        
+        // Lấy tên đội có totalScore lớn thứ hai và gán vào scoreTop2
+        if (this.items[1]) {
+          this.scoreTop2 = this.items[1].name;
+        }
+        
+        // Lấy tên đội có totalScore lớn thứ ba và gán vào scoreTop3
+        if (this.items[2]) {
+          this.scoreTop3 = this.items[2].name;
+        }
+      },
+      
+      
+      
+      resetItems() {
+        // Khôi phục lại mảng items ban đầu
+        this.items = [...initialItems];
+        for (const team of this.items) {
+          team.isGray = false;
+        }
+      },
+    },
+    created() {
+      let _this = this;
+      const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+      channel.addEventListener('message', (event) => {
+        console.log(event.data);
+        let _cmd = event.data.message.cmd;
+        //let _data = event.data.message.data;
+        if (_cmd === 'showTbl') {
+          _this.showTbl();
+        }
+        if (_cmd === 'showScore') {
+          this.items = event.data.message.data;
+        }
+        if (_cmd === 'sort') {
+          _this.sortItems();
+        }
+        if (_cmd === 'showTeamWin') {
+          _this.congratulateTeam = !_this.congratulateTeam;
+        }
+        if (_cmd === 'reset') {
+          _this.resetItems();
+          _this.congratulateTeam = false;
+        }
+      });
+    },
+    watch: {},
+    computed: {},
+  });
+</script>
+</html>
+<style>
+  #app {
+    font-family: arial;
+  }
+  .divScore {
+    display: flex;
+    color: white;
+    font-size: 30px;
+    
+    margin-left: 25px;
+  }
+  ul {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .teamName {
+    width: 315px;
+    font-size: 25px;
+    font-weight: bold;
+    color: white;
+    margin-left: 22px;
+  }
+  .itemsScore {
+    width: 100px;
+    text-align: center;
+    font-weight: 400;
+  }
+  
+  li {
+    display: flex;
+    align-items: center;
+  }
+  
+  input {
+    margin-left: 10px;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  video#bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+  video#bg.blur {
+    filter: blur(3px);
+  }
+  
+  @keyframes zoomInOut {
+    0% {
+      transform: scale(0.98);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+    100% {
+      transform: scale(0.98);
+    }
+  }
+  
+  
+  .divTop1 {
+    width: 370px;
+    height: 50px;
+    position: absolute;
+    top: 30px;
+    left: 37%;
+  }
+  
+  .divTop2 {
+    width: 300px;
+    height: 50px;
+    position: absolute;
+    top: 80px;
+    left: 6%;
+  }
+  
+  .divTop3 {
+    width: 300px;
+    height: 50px;
+    position: absolute;
+    top: 110px;
+    left: 74%;
+  }
+  
+  h2.Top1, h2.Top2, h2.Top3 {
+    animation: zoomInOut 2s alternate infinite;
+    position: relative;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  h2.Top1 {
+    font-size: 50px;
+    color: yellow;
+  }
+  
+  h2.Top2 {
+    font-size: 40px;
+    color: silver;
+  }
+  
+  h2.Top3 {
+    font-size: 35px;
+    color: #D18F38;
+  }
+</style>
