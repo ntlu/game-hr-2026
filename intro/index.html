@@ -16,6 +16,8 @@
         <audio controls autoplay loop :src="currentSong" id="audio" ref="bgm"></audio>
 
         <div class="container-fluid">
+            <!-- <video autoplay muted loop :src="bgVideoSrc"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; filter: blur(5px); opacity: 0.3;"></video> -->
             <video id="bg" autoplay muted loop :src="bgVideoSrc"></video>
         </div>
     </div>
@@ -62,13 +64,13 @@
                         }
                     }
                     if (_cmd === 'showAllTeams') {
-                        _this.bgVideoSrc = '../gioi-thieu-cac-doi-d1.mp4';
+                        _this.bgVideoSrc = '../gioi-thieu-cac-doi-2.mp4';
                     }
                     if (_cmd === 'hideAllTeams') {
                         _this.bgVideoSrc = '../main-intro.mp4';
                     }
                     if (_cmd === 'hengapbanket') {
-                        _this.bgVideoSrc = '../hen-gap-ban-ket.mp4';
+                        _this.bgVideoSrc = '../hen-gap-ban-ket-1.mp4';
                     }
                     if (_cmd === 'hengapchungket') {
                         _this.bgVideoSrc = '../hen-gap-chung-ket.mp4';

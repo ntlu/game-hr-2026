@@ -22,14 +22,15 @@
       <div class="row">
         <div class="col-12 questionWrapper animate__animated animate__fadeIn">
           <div v-show="counterTime" id="counterAni" class="animate__animated animate__rollIn"
-            :style="{ top: showMiniQuestion ? '83%' : '135%', left: showMiniQuestion ? '43%' : '73%', width: showMiniQuestion ? '144px' : '180px', height: showMiniQuestion ? '144px' : '180px' }">
+            :style="{ top: showMiniQuestion ? '83vh' : '45vh', left: showMiniQuestion ? '43vw' : '71vw', width: showMiniQuestion ? '20vh' : '26vh', height: showMiniQuestion ? '20vh' : '26vh' }">
             <div id="outer"></div>
             <div id="inner"></div>
-            <h3 id="counterText" style=" color: lime; font-size: 70px; margin-top: 40px; text-shadow: 1px 5px 3px #333;"
-              :style="{ color: counterTime <= 10 ? 'red' : 'lime', fontSize: showMiniQuestion ? '50px' : '70px', 'margin-top': showMiniQuestion ? '12px' : '40px' }"
+            <h3 id="counterText" style="text-shadow: 1px 5px 3px #333; margin: 0; text-align: center;"
+              :style="{ color: counterTime <= 10 ? 'red' : 'lime', fontSize: showMiniQuestion ? '5vh' : '8vh', lineHeight: showMiniQuestion ? '20vh' : '26vh' }"
               ref="counterText" v-html="counterText"></h3>
           </div>
-          <div v-if="showMiniQuestion" style=" width: 100%; height: 100%;">
+          <div v-if="showMiniQuestion"
+            style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 50; background: rgba(0, 0, 0, 1); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
             <div class="container-small-question">
               <video id="bg-question" class="blur" autoplay muted loop src="../bg-video-2.mp4"></video>
               <div class="row">
@@ -49,7 +50,9 @@
             </div>
           </div>
 
-          <div id="imageLogoTangToc" :style="{ right: showMiniQuestion ? '33%' : '0%', top: (counterTime || showMiniQuestion) ? '2%' : '37.5vh' }"></div>
+          <div id="imageLogoTangToc"
+            :style="{ right: showMiniQuestion ? '33vw' : '3vw', top: (counterTime || showMiniQuestion) ? '2vh' : '15vh' }">
+          </div>
           <div id="containerQuestion">
             <div class="row" style="flex-direction: column;">
               <div class="grid-container">
@@ -84,7 +87,6 @@
       sfxSrc: '../end.mp3',
       audioSrc: '../nhac-game.mp3',
       audioSrcQuestion: '../bgm_1.mp3',
-      // audioSrc: '../bgm_intro_1.weba',
       answerTrue: '../TrueC.mp3',
       answerWrong: '../wrongC.mp3',
       questionDB: qDB,
@@ -300,7 +302,7 @@
     height: 25vh;
     background-repeat: no-repeat;
     background-position: center center;
-    z-index: 10;
+    z-index: 60;
     transition: right 0.5s ease-in-out, top 1s ease-in-out;
     animation: floatAndPulse 4s ease-in-out infinite;
   }
@@ -323,26 +325,21 @@
   }
 
   #containerQuestion {
-    top: -40px;
-    width: 40vw;
-    height: 25vh;
-    left: 3%;
-    margin: 19px -12px;
-    position: relative;
+    position: absolute;
+    top: 57vh;
+    left: 2vw;
+    transform: translateY(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 5;
   }
 
   .grid-container {
     display: grid;
-    grid-template-columns: repeat(6, 100px);
-    grid-template-rows: repeat(6, 100px);
-    gap: 15px 10px;
-    /* Khoảng cách giữa các ô */
-    position: absolute;
-    top: 35%;
-    left: -3%;
+    grid-template-columns: repeat(6, 12.5vh);
+    grid-template-rows: repeat(6, 12.5vh);
+    gap: 2.5vh 1vh;
   }
 
   .number-overlay {
@@ -351,10 +348,9 @@
     left: 50%;
     transform: translate(-50%, -50%);
     color: rgb(255, 255, 255);
-    font-size: 45px;
+    font-size: 5vh;
     font-weight: bold;
-    -webkit-text-stroke: 3px rgb(0, 0, 0);
-    /* Viền trắng xung quanh số */
+    -webkit-text-stroke: 0.3vh rgb(0, 0, 0);
   }
 
   .animate-color-change {

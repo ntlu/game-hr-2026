@@ -212,7 +212,7 @@ div#inner {
 .roundTitle-img.title-center {
     top: 50vh;
     transform: translateY(-50%);
-    width: 60vw;
+    width: 50vw;
     animation: floatingCenter 3s ease-in-out infinite;
 }
 

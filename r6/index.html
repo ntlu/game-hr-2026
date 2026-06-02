@@ -320,16 +320,16 @@
         console.log(event.data);
         let _cmd = event.data.message.cmd;
         let _data = event.data.message.data;
-        if (_cmd === 'showAnswerR1') {
+        if (_cmd === 'showAnswerR6') {
           _this.showAnswer();
         }
-        if (_cmd === 'startCountingR1') {
+        if (_cmd === 'startCountingR6') {
           _this.startCounting(_data);
         }
-        if (_cmd === 'nextQuestionR1') {
+        if (_cmd === 'nextQuestionR6') {
           _this.nextQuestion();
         }
-        if (_cmd === 'showCorrectAnswerR1') {
+        if (_cmd === 'showCorrectAnswerR6') {
           _this.showCorrectAnswer();
         }
       });

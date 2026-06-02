@@ -1,24 +1,29 @@
-body{
-    margin:0;
+body {
+    margin: 0;
     padding: 0;
     overflow: hidden;
 }
+
 video#bg {
     position: absolute;
-    top: 0;
+    top: 50%;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: cover;
     z-index: -1;
+    transform: translateY(-50%);
 }
+
 video#bg.blur {
     filter: blur(7px);
 }
+
 .questionWrapper {
     position: relative;
 }
-#questionHolder{
+
+#questionHolder {
     background-image: url(../q_ui.png);
     background-size: contain;
     width: 100vw;
@@ -33,20 +38,22 @@ video#bg.blur {
     align-items: center;
     justify-content: center;
 }
-#questionHolder h1{
+
+#questionHolder h1 {
     font-family: arial;
     text-align: center;
     position: absolute;
-    width:100%;
+    width: 100%;
     top: 5%;
     color: yellow;
 
     font-weight: bold;
 }
-#questionHolder span{
+
+#questionHolder span {
     text-align: center;
     position: absolute;
-    width:80%;
+    width: 80%;
     /* top: 36%;
     left: 10%; */
     font-size: 26px;
@@ -54,6 +61,7 @@ video#bg.blur {
     color: white;
     text-shadow: 1px 1px #333;
 }
+
 div#counterAni {
     width: 140px;
     height: 140px;
@@ -61,11 +69,12 @@ div#counterAni {
     position: absolute;
     top: 70%;
     border-radius: 100%;
-    text-align:center;
+    text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 div#outer {
     background: url(../outer_counter.png);
     width: 100%;
@@ -75,6 +84,7 @@ div#outer {
     background-repeat: no-repeat;
     animation: rotateClockwise 10s ease-in-out infinite;
 }
+
 div#inner {
     background: url(../inner_counter.png);
     width: 100%;
@@ -84,32 +94,39 @@ div#inner {
     background-repeat: no-repeat;
     animation: counterClockwise 5s ease-in-out infinite;
 }
+
 @keyframes rotateClockwise {
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
 }
-@keyframes counterClockwise{
+
+@keyframes counterClockwise {
     0% {
         transform: rotate(360deg);
     }
+
     50% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
 }
-#counterText{
-    line-height:140px;
+
+#counterText {
+    line-height: 140px;
     color: lime;
     font-size: 23px;
     text-shadow: 1px 5px 3px #333;
 }
-.ansPanel{
+
+.ansPanel {
     background: url(../normal.png) no-repeat;
     background-size: contain;
     width: 50vw;
@@ -123,7 +140,8 @@ div#inner {
     justify-content: center;
     align-items: center;
 }
-.ansPanel.correct{
+
+.ansPanel.correct {
     background-image: url(../correct.png);
 }
 
