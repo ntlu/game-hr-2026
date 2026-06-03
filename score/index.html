@@ -43,9 +43,11 @@
       </div>
     </div>
 
-    <div class="congrats-text animate__animated animate__fadeInUp" v-if="congratulateTeam === true">
+    <!-- <div class="congrats-text animate__animated animate__fadeInUp" v-if="congratulateTeam === true">
       XIN CHÚC MỪNG <br> 8 ĐỘI <br> VÀO VÒNG BÁN KẾT
-    </div>
+    </div> -->
+    <video class="congrats-video animate__animated animate__fadeInUp" autoplay muted loop src="../chuc-mung-8-doi-2.mp4"
+      v-if="congratulateTeam === true"></video>
   </div>
 </body>
 
@@ -169,7 +171,7 @@
   }
 
   .table-wrapper.is-congrats {
-    top: 5%;
+    top: 2%;
     transform: translateY(0);
   }
 
@@ -228,6 +230,10 @@
     border-radius: 5px;
     /* margin-bottom: clamp(1px, 0.4vh, 4px); */
     /* Tự động co giãn khoảng cách */
+  }
+
+  .is-congrats .cyber-row {
+    padding: 0 !important;
   }
 
   .list-move {
@@ -319,6 +325,17 @@
 
   video#bg.blur {
     filter: blur(3px);
+  }
+
+  .congrats-video {
+    position: absolute;
+    z-index: 999;
+    bottom: 1vh;
+    transform: translateX(-50%);
+    height: 52vh;
+    border-radius: 50px;
+    border: 3px solid #00f3ff;
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.6), inset 0 0 20px rgba(0, 243, 255, 0.3);
   }
 
   .congrats-text {

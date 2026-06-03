@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,70 +14,57 @@
 <body>
   <div id="app">
     <div class="container-fluid">
-      <video id="bg" style="filter: blur(5px)" autoplay muted loop src="../bg-video-2.mp4"></video>
-      <div style="display: flex; justify-content: space-between">
-        <button @click="sendCmd({cmd: 'showTbl',data: items})" class="btn btn-primary">ShowTbl</button>
-        
-        <button @click="sendCmd({cmd: 'showScore',data: items})" class="btn btn-primary">showScore</button>
-        
-        <button @click="sendCmd({cmd: 'sort',data: items})" class="btn btn-primary">Sort</button>
-        <button @click="sendCmd({cmd: 'showTeamWin',data: items})" class="btn btn-primary">Show Team Win</button>
-        <button @click="sendCmd({cmd: 'reset',data: items})" class="btn btn-primary">Reset</button>
-        
-        <!-- <button @click="resetItems">Reset</button> -->
+      <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 5px;">
+        <button @click="sendCmd({cmd: 'showTbl',data: items})" class="btn btn-primary btn-sm">ShowTbl</button>
+        <button @click="sendCmd({cmd: 'showScore',data: items})" class="btn btn-primary btn-sm">showScore</button>
+        <button @click="sendCmd({cmd: 'sort',data: items})" class="btn btn-primary btn-sm">Sort</button>
+        <button @click="sendCmd({cmd: 'delete',data: items})" class="btn btn-primary btn-sm">Show Team Win</button>
+        <button @click="sendCmd({cmd: 'reset',data: items})" class="btn btn-primary btn-sm">Reset</button>
       </div>
-      <div class="rowName">
-        <h3 style="margin-bottom: 0px; margin-left: 333px; margin-right: 82px">Giải mã ô số:</h3>
-        <h3 style="margin-bottom: 0px">LCTH:</h3>
-        <h3 style="margin-bottom: 0px; margin-left: 66px; margin-right: 80px">Tuyên truyền:</h3>
-        <h3 style="margin-bottom: 0px">Tổng:</h3>
+      <div class="rowName"
+        style="width: 100%; margin: 0 auto 5px auto; padding: 0; display: flex; align-items: center;">
+        <div style="flex: 0 0 25%; max-width: 180px;"></div>
+        <div style="flex: 1; display: flex; justify-content: center; gap: 25px;">
+          <h4
+            style="margin: 0; width: 80px; text-align: center; font-size: clamp(10px, 1.5vh, 16px); font-weight: bold; word-break: break-word;">
+            ĐỒNG ĐỘI ƠI!</h4>
+          <h4
+            style="margin: 0; width: 80px; text-align: center; font-size: clamp(10px, 1.5vh, 16px); font-weight: bold; word-break: break-word;">
+            LÀM CHỦ TÌNH HUỐNG</h4>
+          <h4
+            style="margin: 0; width: 80px; text-align: center; font-size: clamp(10px, 1.5vh, 16px); font-weight: bold; word-break: break-word;">
+            TUYÊN TRUYỀN</h4>
+          <h4
+            style="margin: 0; width: 80px; text-align: center; font-size: clamp(10px, 1.5vh, 16px); font-weight: bold; word-break: break-word;">
+            TỔNG</h4>
+        </div>
       </div>
-      <ul>
-        <transition-group name="list">
-          <li
-          v-for="item in items"
-          :key="item.id"
-          :style="{ backgroundColor: item.isGray ? 'gray' : 'transparent' }"
-          style="width: 92vw"
-          >
-          <span class="teamName">{{ 'Đội ' + item.id + ': ' + item.name }}</span>
-          <div>
-            <input @input="calculateTotalScore" class="inputScore" v-model="item.r1" placeholder="Enter r1" />
-            <input
-            @input="calculateTotalScore"
-            class="inputScore"
-            style="margin-left: 55px; margin-right: 55px"
-            v-model="item.r21"
-            placeholder="Enter r21"
-            />
-            <input
-            @input="calculateTotalScore"
-            class="inputScore"
-            style="text-align: center"
-            v-model="item.r22"
-            placeholder="Enter r22"
-            />
-            <input
-            @input="calculateTotalScore"
-            class="inputScore"
-            style="margin-left: 55px"
-            v-model="item.totalScore"
-            />
-          </div>
-        </li>
-      </transition-group>
-    </ul>
+      <ul style="width: 100%; margin: 0 auto; flex-direction: column;">
+        <transition-group name="list" tag="div" style="width: 100%; display: flex; flex-direction: column;">
+          <li v-for="item in items" :key="item.id" :style="{ backgroundColor: item.isGray ? 'gray' : 'transparent' }"
+            style="display: flex; align-items: center; width: 100%; overflow: hidden;">
+            <span class="teamName" style="flex: 0 0 25%; max-width: 180px;">{{ 'Đội ' + item.id + ':\u00A0' + item.name
+              }}</span>
+            <div style="flex: 1; display: flex; justify-content: center; gap: 25px;">
+              <input @input="calculateTotalScore" class="inputScore" v-model="item.r1" placeholder="Enter r1" />
+              <input @input="calculateTotalScore" class="inputScore" v-model="item.r21" placeholder="Enter r21" />
+              <input @input="calculateTotalScore" class="inputScore" v-model="item.r22" placeholder="Enter r22" />
+              <input @input="calculateTotalScore" class="inputScore" v-model="item.totalScore" />
+            </div>
+          </li>
+        </transition-group>
+      </ul>
+    </div>
   </div>
-</div>
 </body>
 
 <script>
   const initialItems = [
-  { id: 1, name: 'E1 + POTH', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
-  { id: 2, name: 'F3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
-  { id: 3, name: 'VPL', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 1, name: 'E1 + POTH', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 2, name: 'F3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 3, name: 'VPL', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
   ];
-  
+
   const vm = new Vue({
     el: '#app',
     data: () => ({
@@ -95,21 +83,21 @@
         channel.postMessage({ message: cmd }); // Send the message
         console.log(cmd);
       },
-      
+
       sortItems() {
         this.sorting = true;
         this.items.sort((a, b) => b.totalScore - a.totalScore);
         this.sorting = false;
-        
-        // Lấy 6 đội có totalScore thấp nhất
+
+        // Lấy 3 đội cao điểm nhất (bỏ đi các đội điểm thấp nhất từ vị trí thứ 3 trở đi)
         const lowestScoreTeams = this.items.slice(3);
-        
+
         // Đánh dấu các đội này với màu xám
         for (const team of lowestScoreTeams) {
           team.isGray = true;
         }
       },
-      
+
       resetItems() {
         // Khôi phục lại mảng items ban đầu
         this.items = [...initialItems];
@@ -118,7 +106,7 @@
         }
       },
     },
-    created() {},
+    created() { },
     watch: {
       sorting(newVal) {
         if (!newVal) {
@@ -136,16 +124,19 @@
     },
   });
 </script>
+
 </html>
 <style>
   #app {
     font-family: arial;
   }
+
   .rowName {
-    color: white;
+    color: black;
     display: flex;
-    width: 95vw;
+    width: 100%;
   }
+
   ul {
     display: flex;
     justify-content: center;
@@ -153,39 +144,52 @@
     margin: 0;
     padding: 0;
     background: #d1f8ec;
+    border-radius: 8px;
+    overflow: hidden;
   }
-  
+
   .teamName {
-    width: 300px;
-    font-size: 25px;
+    width: 100%;
+    font-size: clamp(10px, 2.5vh, 20px);
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+
   .inputScore {
     border: none;
-    font-size: 22px;
+    font-size: clamp(12px, 1.8vh, 18px);
     text-align: center;
-    width: 100px;
-    height: 30px;
+    width: 80px;
+    height: clamp(20px, 3vh, 28px);
     box-shadow: 2px 2px 10px 0.5px #de6d6d;
+    border-radius: 4px;
+    margin: 0;
   }
-  
+
   li {
-    border: 1px solid rgb(108, 108, 108);
-    padding: 5px;
-    margin-bottom: 10px;
+    border-bottom: 1px solid rgb(108, 108, 108);
+    padding: clamp(2px, 0.4vh, 6px) 10px;
+    margin-bottom: 0;
     display: flex;
     align-items: center;
   }
-  
-  input {
-    margin-left: 10px;
+
+  li:last-child {
+    border-bottom: none;
   }
-  
+
+  input {
+    margin-left: 0;
+  }
+
   .list-enter-active {
     opacity: 0;
     transform: translateY(10px);
     transition: all 0.5s ease-in-out;
   }
-  
+
   .list-enter-to {
     opacity: 1;
     transform: translateY(0);

@@ -103,8 +103,7 @@
       counterColor: 'lime',
       counterFontSize: '100px',
       counterTime: 0,
-      // audioSrc: '../bgm_1.mp3',
-      audioSrc: '../nhac-game.mp3',
+      audioSrc: '../nhac-game-2.mp3',
       sfxSrc: '../end.mp3',
       questionDB: qDB,
       currentQIndex: null,
@@ -286,6 +285,7 @@
     width: 60vw;
     height: 60vh;
     top: 15vh;
+    left: 20vw;
     transition: all 1s ease-in-out;
     pointer-events: none;
     z-index: 2;
@@ -325,13 +325,15 @@
   #questionHolder {
     /* background-image: url(../tiep-suc.png); */
     background-size: contain;
-    top: -18px;
+    /* top: -18px; */
     width: 100vw;
     height: 100vh;
     background-repeat: no-repeat;
     background-position: center center;
-    margin: 19px -15px;
-    position: relative;
+    /* margin: 19px -15px; */
+    position: fixed;
+    top: 0;
+    left: 0;
     z-index: 3;
   }
 

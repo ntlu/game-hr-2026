@@ -17,7 +17,7 @@
     <audio class="d-none" :src="sfxSrc" id="audio" ref="sfx"></audio>
     <div class="container-fluid p-0 m-0" style="width: 100vw; height: 100vh; overflow: hidden; position: relative;">
       <video autoplay muted loop src="../tam-dau-y-hop.mp4"
-        style="position: absolute; top: 50%; left: 0; width: 100vw; height: auto; object-fit: cover; z-index: 0; transform: translateY(-50%);"></video>
+        style="position: absolute; top: 50%; left: 0; width: 100vw; height: 100%; object-fit: cover; z-index: 0; transform: translateY(-50%);"></video>
       <div v-if="showMiniQuestion" class="row m-0 w-100 h-100 animate__animated animate__fadeIn"
         style="position: absolute; top: 0; left: 0; z-index: 1; background: rgba(0,0,0,0.5);">
         <div class="col-12 p-0 h-100 d-flex flex-column justify-content-center align-items-center">
@@ -267,9 +267,9 @@
     height: 100px;
     background: radial-gradient(#0dcaf06b, #681bff);
     position: absolute;
-    bottom: 77%;
-    left: 84%;
-    transform: translateX(-50%);
+    bottom: 2%;
+    left: 50%;
+    margin-left: -50px;
     border-radius: 100%;
     text-align: center;
   }

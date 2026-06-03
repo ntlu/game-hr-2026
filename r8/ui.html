@@ -1,50 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
-    <script src="./vue-2.6.10.js"></script>
-    <title>UI R7</title>
-  </head>
-  <body>
-    <div id="app" class="container">
-      <div class="row">
-        <div class="col-3">
-          <button @click="sendCmd({cmd: 'chooseTeam',data: 1})" class="btn btn-primary">Chỉ Đội ( RP )</button>
-        </div>
-        <div class="col-3">
-          <button @click="sendCmd({cmd: 'chooseTeam',data: 2})" class="btn btn-primary">Chỉ Đội ( E1 + POTH )</button>
-        </div>
-        <div class="col-3" style="margin-bottom: 25px;">
-          <button @click="sendCmd({cmd: 'chooseTeam',data: 3})" class="btn btn-primary">Chỉ Đội ( VPL )</button>
-        </div>
-        <div class="col-3" style="margin-bottom: 25px;">
-          <button @click="sendCmd({cmd: 'showAll',data: null})" class="btn btn-primary">Hiển Thị Cả 3</button>
-        </div>
-         
-        <div class="col-3">
-          <input type="number" class="form-control" v-model.number="second" />
-          <button @click="sendCmd({cmd: 'startCountingR7',data: second})" class="btn btn-primary">
-            2. Start countdown [{{second}}]
-          </button>
-        </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+  <script src="./vue-2.6.10.js"></script>
+  <title>UI R8</title>
+</head>
+
+<body>
+  <div id="app" class="container">
+    <div class="row">
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'chooseTeam',data: 1})" class="btn btn-primary">Chỉ Đội ( RP )</button>
+      </div>
+      <div class="col-3">
+        <button @click="sendCmd({cmd: 'chooseTeam',data: 2})" class="btn btn-primary">Chỉ Đội ( E1 + POTH )</button>
+      </div>
+      <div class="col-3" style="margin-bottom: 25px;">
+        <button @click="sendCmd({cmd: 'chooseTeam',data: 3})" class="btn btn-primary">Chỉ Đội ( VPL )</button>
+      </div>
+      <div class="col-3" style="margin-bottom: 25px;">
+        <button @click="toggleAll" class="btn btn-primary">Ẩn / hiện Cả 3</button>
+      </div>
+
+      <div class="col-3">
+        <input type="number" class="form-control" v-model.number="second" />
+        <button @click="sendCmd({cmd: 'startCountingR7',data: second})" class="btn btn-primary">
+          2. Start countdown [{{second}}]
+        </button>
       </div>
     </div>
-    <script>
-      var vm = new Vue({
-        el: '#app',
-        data: {
-          second: 900,
+  </div>
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        second: 900,
+        isShowAll: true,
+      },
+      methods: {
+        toggleAll() {
+          this.isShowAll = !this.isShowAll;
+          if (this.isShowAll) {
+            this.sendCmd({ cmd: 'showAll', data: null });
+          } else {
+            this.sendCmd({ cmd: 'hideAll', data: null });
+          }
         },
-        methods: {
-          sendCmd(cmd) {
-            const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
-            channel.postMessage({ message: cmd }); // Send the message
-            console.log(cmd);
-          },
+        sendCmd(cmd) {
+          const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+          channel.postMessage({ message: cmd }); // Send the message
+          console.log(cmd);
         },
-      });
-    </script>
-  </body>
+      },
+    });
+  </script>
+</body>
+
 </html>

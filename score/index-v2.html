@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,82 +14,93 @@
 <body>
   <div id="app">
     <video id="bg" autoplay muted loop src="../bg-video-2.mp4"></video>
-    <div class="container-fluid" v-if="showTblStatus === true">
-      <img class="imgTableScore" src="./static/table-score-day2.png" alt="" />
-      
-      <ul>
-        <transition-group name="list" style="margin-top: 222px">
-          <li
-          v-for="item in items"
-          :key="item.id"
-          :style="{backgroundColor: item.isGray ? '#8a8a8a8a' : 'transparent',  color: item.isGray ? 'red' : 'inherit' }"
-          style="width: 100vw; margin-bottom: 15px;padding-left: 7%; border-bottom: 1px dotted #ffffff57; padding-bottom: 15px;"
-          >
-          <span class="teamName" :style="{ color: item.isGray ? '#e1dbdb' : 'white' }"
-          >{{ 'Đội ' + item.id + ': ' + item.name }}</span>
-          <div class="divScore" :style="{ color: item.isGray ? '#e1dbdb' : 'white' }">
-            <span class="itemsScore" style="margin-left: 20px">{{item.r1}}</span>
-            <span class="itemsScore" style="margin-left: 42px">{{item.r21}}</span>
-            <span class="itemsScore" style="margin-left: 42px">{{item.r22}}</span>
-            <span class="itemsScore" style="background-color: lime; border-radius: 5px; height: 50px; font-weight: bold; margin-left: 43px; color: rgb(218, 41, 41); text-shadow: 1px 2px 2px white; -webkit-text-stroke: thin;">{{item.totalScore}}</span>
+    <div class="table-wrapper" :class="{ 'is-congrats': congratulateTeam }" v-if="showTblStatus === true">
+      <div class="cyber-table animate__animated animate__zoomInDown">
+        <div class="cyber-header">
+          <span class="teamName" style="color: #00f3ff; font-weight: 900; letter-spacing: 2px;">DANH SÁCH ĐỘI</span>
+          <div class="divScore" style="color: #ff007f; font-weight: 900; letter-spacing: 2px;">
+            <span class="itemsScore" style="font-size: clamp(11px, 1.8vh, 16px);">Tâm đầu ý hợp</span>
+            <span class="itemsScore">Tiếp sức</span>
+            <span class="itemsScore" style="font-size: clamp(11px, 1.8vh, 16px);">Giải mã bí ẩn</span>
+            <span class="itemsScore" style="color: #ffdf00;">TỔNG</span>
           </div>
-        </li>
-      </transition-group>
-    </ul>
-    <!-- <h1 style=" position: absolute;z-index: 999; color:white; font-size: 99px;" v-if="congratulateTeam === true">Chúc mừng các đội vào vòng trong!</h1> -->
-    <img src="./static/chuc-mung-3-doi.png" alt="" style=" position: absolute;z-index: 999; margin-left: 15%;
-    margin-top: -3%; animation: zoomInOut 2s alternate infinite;" v-if="congratulateTeam === true">
+        </div>
+
+        <transition-group name="list" tag="div" class="list-wrapper">
+          <div v-for="item in items" :key="item.id" class="cyber-row"
+            :style="{backgroundColor: item.isGray ? 'rgba(255, 0, 0, 0.2)' : 'transparent'}">
+            <span class="teamName" :style="{ color: item.isGray ? '#ff6b6b' : 'white' }">{{ 'Đội ' + item.id + ':\u00A0'
+              +
+              item.name
+              }}</span>
+            <div class="divScore" :style="{ color: item.isGray ? '#ff6b6b' : 'white' }">
+              <span class="itemsScore score-r1">{{item.r1}}</span>
+              <span class="itemsScore score-r21">{{item.r21}}</span>
+              <span class="itemsScore score-r22">{{item.r22}}</span>
+              <span class="itemsScore total-score">{{item.totalScore}}</span>
+            </div>
+          </div>
+        </transition-group>
+      </div>
+    </div>
+
+    <!-- <div class="congrats-text animate__animated animate__fadeInUp" v-if="congratulateTeam === true">
+      XIN CHÚC MỪNG <br> 3 ĐỘI <br> VÀO VÒNG CHUNG KẾT!
+    </div> -->
+    <video class="congrats-video animate__animated animate__fadeInUp" autoplay muted loop src="../chuc-mung-3-doi.mp4"
+      v-if="congratulateTeam === true"></video>
   </div>
-</div>
 </body>
 
 <script>
   const initialItems = [
-  { id: 1, name: 'PCC', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
-  { id: 2, name: 'QC', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
-  { id: 3, name: 'VPL', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
-  { id: 4, name: 'F3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
-  { id: 5, name: 'DI', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
-  { id: 6, name: 'E3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 1, name: 'PCC', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 2, name: 'QC', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 3, name: 'VPL', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 4, name: 'F3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 5, name: 'DI', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 6, name: 'E3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 7, name: 'D7', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 8, name: 'D8', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
   ];
-  
+
   const vm = new Vue({
     el: '#app',
     data: () => ({
       items: [...initialItems], // Sao chép mảng ban đầu vào biến items
       sorting: false,
-      
+
       showTblStatus: false,
       sortTeam: false,
-      
-      congratulateTeam:false,
+
+      congratulateTeam: false,
     }),
     methods: {
       showTbl() {
         this.showTblStatus = !this.showTblStatus;
       },
-      
+
       sortItems() {
         this.sorting = true;
         this.items.sort((a, b) => b.totalScore - a.totalScore);
         this.sorting = false;
-        
-        // Lấy 6 đội có totalScore thấp nhất
+
+        // Lấy 3 đội cao điểm nhất (bỏ đi các đội điểm thấp nhất từ vị trí thứ 3 trở đi)
         const lowestScoreTeams = this.items.slice(3);
-        
+
         // Đánh dấu các đội này với màu xám
         for (const team of lowestScoreTeams) {
           team.isGray = true;
         }
       },
-      
-      deleteTeamsOut(){
+
+      deleteTeamsOut() {
         if (!this.isGray) {
           this.items = this.items.filter(team => !team.isGray);
         }
         this.congratulateTeam = true;
       },
-      
+
       resetItems() {
         // Khôi phục lại mảng items ban đầu
         this.items = [...initialItems];
@@ -125,52 +138,175 @@
     computed: {},
   });
 </script>
+
 </html>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+
   #app {
-    font-family: arial;
-  }
-  .divScore {
-    display: flex;
-    color: white;
-    font-size: 35px;
-  }
-  ul {
-    position: relative;
-    z-index: 2;
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .teamName {
-    width: 315px;
-    font-size: 28px;
-    font-weight: bold;
-    color: white;
-  }
-  .itemsScore {
-    width: 100px;
-    text-align: center;
-    font-weight: 400;
-  }
-  
-  li {
-    display: flex;
     align-items: center;
   }
-  
-  input {
-    margin-left: 10px;
+
+  .table-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    transform: translateY(-50%);
+    transition: all 1.5s ease-in-out;
+    z-index: 10;
   }
-  
+
+  .table-wrapper.is-congrats {
+    top: 5%;
+    transform: translateY(0);
+  }
+
+  .cyber-table {
+    background: rgba(10, 15, 30, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 2px solid rgba(0, 243, 255, 0.5);
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(0, 243, 255, 0.1);
+    border-radius: 15px;
+    padding: clamp(15px, 2.5vh, 25px) clamp(20px, 3vw, 40px);
+    width: 97vw;
+    position: relative;
+  }
+
+  .cyber-table::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 243, 255, 0.03) 51%);
+    background-size: 100% 6px;
+    pointer-events: none;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  .cyber-header {
+    display: flex;
+    /* === ĐỘ DÀY VIỀN DƯỚI VÀ KHOẢNG CÁCH CỦA TIÊU ĐỀ === */
+    padding-bottom: clamp(5px, 1vh, 15px);
+    border-bottom: 2px solid rgba(0, 243, 255, 0.5);
+    margin-bottom: clamp(5px, 1.5vh, 15px);
+    position: relative;
+    z-index: 2;
+  }
+
+  .list-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cyber-row {
+    display: flex;
+    align-items: center;
+    /* === KÍCH THƯỚC VÀ KHOẢNG CÁCH CỦA MỖI HÀNG (ĐỘ MỎNG) === */
+    padding: clamp(2px, 0.7vh, 8px) 10px;
+    /* Tự động co giãn theo chiều cao màn hình */
+    border-bottom: 1px dotted rgba(255, 255, 255, 0.15);
+    transition: all 2.5s ease-in-out;
+    border-radius: 5px;
+    margin-bottom: clamp(1px, 1.4vh, 10px);
+    /* Tự động co giãn khoảng cách */
+  }
+
+  .is-congrats .cyber-row {
+    padding: 0 !important;
+  }
+
+  .list-move {
+    transition: transform 1.5s ease-in-out;
+  }
+
+  .cyber-row:hover {
+    background: rgba(0, 243, 255, 0.15) !important;
+  }
+
+  .teamName {
+    width: 400px;
+    /* === CỠ CHỮ TÊN ĐỘI === */
+    font-size: clamp(12px, 2.4vh, 25px);
+    /* Nhỏ nhất là 12px, lớn nhất là 18px */
+    font-weight: 700;
+  }
+
+  .divScore {
+    display: flex;
+    flex: 1;
+    justify-content: space-around;
+    gap: 8px;
+  }
+
+  .itemsScore {
+    width: 160px;
+    text-align: center;
+    /* === CỠ CHỮ ĐIỂM SỐ === */
+    font-size: clamp(16px, 3vh, 22px);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .cyber-header .itemsScore {
+    font-size: clamp(14px, 2vh, 20px);
+    font-weight: 900;
+  }
+
+  .score-r1,
+  .score-r21,
+  .score-r22,
+  .total-score {
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 2px 10px;
+    color: #fff;
+  }
+
+  .score-r1 {
+    background: linear-gradient(90deg, #0052d4, #4364f7, #6fb1fc);
+    box-shadow: 0 0 10px rgba(67, 100, 247, 0.5);
+    padding: 2px 10px;
+  }
+
+  .score-r21 {
+    background: linear-gradient(90deg, #11998e, #38ef7d);
+    box-shadow: 0 0 10px rgba(56, 239, 125, 0.5);
+    padding: 2px 10px;
+  }
+
+  .score-r22 {
+    background: linear-gradient(90deg, #ff007f, #7928ca);
+    box-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
+  }
+
+  .total-score {
+    background: linear-gradient(90deg, #ffdf00, #ffffff);
+    box-shadow: 0 0 15px rgba(255, 223, 0, 0.6);
+    color: #000;
+    /* Chữ màu đen để nổi bật trên nền vàng trắng */
+  }
+
   body {
     margin: 0;
     padding: 0;
     overflow: hidden;
   }
+
   video#bg {
     position: absolute;
     top: 0;
@@ -180,25 +316,56 @@
     object-fit: cover;
     z-index: -1;
   }
+
   video#bg.blur {
     filter: blur(3px);
   }
-  
-  @keyframes zoomInOut {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.2);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  .imgTableScore{
-    height: 100vh;
+
+  .congrats-video {
     position: absolute;
-    z-index: 1;
-    left: -1px;
+    z-index: 999;
+    bottom: 5vh;
+    transform: translateX(-50%);
+    height: 60vh;
+    border-radius: 50px;
+    border: 3px solid #00f3ff;
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.6), inset 0 0 20px rgba(0, 243, 255, 0.3);
+  }
+
+  .congrats-text {
+    position: absolute;
+    z-index: 999;
+    left: 50%;
+    bottom: 8vh;
+    transform: translateX(-50%);
+    font-size: clamp(24px, 4.5vw, 48px);
+    font-weight: 900;
+    color: #fff;
+    text-align: center;
+    background: rgba(10, 15, 30, 0.95);
+    padding: 20px 60px;
+    border: 3px solid #00f3ff;
+    border-radius: 20px;
+    box-shadow: 0 0 50px rgba(0, 243, 255, 0.6), inset 0 0 20px rgba(0, 243, 255, 0.3);
+    text-shadow: 0 0 15px #ff007f, 0 0 25px #ff007f;
+    letter-spacing: 4px;
+    animation: neonPulse 1.5s infinite alternate;
+    white-space: nowrap;
+    clip-path: polygon(5% 0, 95% 0, 100% 20%, 100% 80%, 95% 100%, 5% 100%, 0 80%, 0 20%);
+    line-height: 1.3;
+  }
+
+  @keyframes neonPulse {
+    0% {
+      box-shadow: 0 0 30px rgba(0, 243, 255, 0.4), inset 0 0 10px rgba(0, 243, 255, 0.2);
+      text-shadow: 0 0 10px #ff007f;
+      transform: translateX(-50%) scale(1);
+    }
+
+    100% {
+      box-shadow: 0 0 80px rgba(0, 243, 255, 1), inset 0 0 40px rgba(0, 243, 255, 0.8);
+      text-shadow: 0 0 20px #ff007f, 0 0 40px #ff007f;
+      transform: translateX(-50%) scale(1.05);
+    }
   }
 </style>
