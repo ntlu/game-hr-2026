@@ -27,17 +27,20 @@
       }
     }
 
-    .floating-img {
+    .float-wrapper {
       animation: floatContinuous 3s ease-in-out infinite;
-      transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.3s;
       position: relative;
-      filter: hue-rotate(var(--hue, 150deg));
     }
 
-    .floating-img:hover {
-      animation-play-state: paused;
-      transform: scale(1.08) translateY(-5px) !important;
-      filter: hue-rotate(var(--hue, 150deg)) drop-shadow(0 10px 25px rgba(0, 243, 255, 0.9)) !important;
+    .base-img {
+      transition: transform 0.4s ease, filter 0.4s ease;
+      position: relative;
+      transform-origin: center center;
+    }
+
+    .active-scan {
+      transform: scale(1.15) !important;
+      filter: drop-shadow(0 0 30px rgba(0, 255, 255, 1)) brightness(1.2) !important;
       z-index: 10;
     }
 
@@ -58,15 +61,16 @@
 
       <!-- Image Grid -->
       <div class="image-grid-container d-flex justify-content-center align-items-center"
-        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; width: 80vw;">
+        style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); z-index: 1; width: 80vw;">
         <div class="row w-100 justify-content-center px-4">
           <div class="col-3 p-1 d-flex justify-content-center animate__animated animate__zoomIn" v-for="i in 8" :key="i"
             :style="`animation-delay: ${i * 0.1}s;`">
-            <div style="position: relative; display: inline-block;"
+            <div style="position: relative; display: inline-block;" class="float-wrapper"
+              :style="`--hue: 135deg; animation-delay: ${(i % 4) * 0.2}s;`"
               :class="{'animate__animated animate__tada animate__infinite': animatingBox === (i - 1)}">
-              <img :src="`./static/${i}.png`" class="img-fluid floating-img"
-                :class="{'grayscale-img': openedBoxes.includes(i - 1)}"
-                :style="`--hue: 135deg; animation-delay: ${(i % 4) * 0.2}s; max-height: 32vh; object-fit: contain; cursor: pointer;`" />
+              <img :src="`./static/${i}.png`" class="img-fluid base-img"
+                :class="{'grayscale-img': openedBoxes.includes(i - 1), 'active-scan': activeScanIndex === (i - 1)}"
+                style="max-height: 32vh; object-fit: contain; cursor: default;" />
             </div>
           </div>
         </div>
@@ -77,7 +81,7 @@
         <div class="col-12 p-0 h-100 d-flex flex-column justify-content-center align-items-center">
           <div id="questionHolder">
             <span v-if="currentQIndex >= 0" class="topic-title">
-              CÂU HỎI TÌNH HUỐNG SỐ {{currentQIndex + 1}}
+              TÌNH HUỐNG SỐ {{currentQIndex + 1}}
             </span>
             <div v-if="currentQIndex >= 0" class="question-content animate__animated animate__zoomIn"
               style="font-size: clamp(30px, 4vw, 48px); color: white; text-align: center; text-shadow: 0 0 10px rgba(255,255,255,0.8); line-height: 1.6; font-weight: 700; max-width: 100%; margin: 0 auto;">
@@ -111,18 +115,20 @@
       audioSrc: '../bgm_1.mp3',
       sfxSrc: '../end.mp3',
       questionDB: [
-        { q: 'Tình huống 1: Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
-        { q: 'Tình huống 2: Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
-        { q: 'Tình huống 3: Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
-        { q: 'Tình huống 4: Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
-        { q: 'Tình huống 5: Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
-        { q: 'Tình huống 6: Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
-        { q: 'Tình huống 7: Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
-        { q: 'Tình huống 8: Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' }
+        { q: 'Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
+        { q: 'Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
+        { q: 'Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
+        { q: 'Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
+        { q: 'Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
+        { q: 'Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
+        { q: 'Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' },
+        { q: 'Đây là đoạn văn bản mô tả câu hỏi tình huống dành cho đội chơi. Xin mời các bạn đưa ra phương án giải quyết hợp lý nhất. Hết 2 phút suy nghĩ và trả lời.' }
       ],
       currentQIndex: -1,
       openedBoxes: [],
       animatingBox: -1,
+      activeScanIndex: 0,
+      scanInterval: null,
       correctWords: [],
       answerStatus: false,
       counterStatus: false,
@@ -196,7 +202,7 @@
       },
       updateCounterDisplay() {
         if (this.counterTime > 60) {
-          this.counterFontSize = '60px';
+          this.counterFontSize = '7vh';
           this.counterColor = 'lime';
 
           // Tính toán phút và giây còn lại
@@ -207,7 +213,7 @@
           }
           this.counterText = `${minutes}:${remainingSeconds}`;
         } else {
-          this.counterFontSize = '60px';
+          this.counterFontSize = '8vh';
           if (this.counterTime < 10) {
             this.counterColor = 'red';
           }
@@ -218,6 +224,32 @@
       receiveMessage(event) {
         console.log(event.data);
       },
+      startScanning() {
+        if (this.scanInterval) clearInterval(this.scanInterval);
+        this.scanInterval = setInterval(() => {
+          if (this.openedBoxes.length >= 8) {
+            this.activeScanIndex = -1;
+            clearInterval(this.scanInterval);
+            return;
+          }
+          if (this.showMiniQuestion || this.animatingBox !== -1) {
+            this.activeScanIndex = -1;
+            return;
+          }
+
+          let nextIndex = (this.activeScanIndex + 1) % 8;
+          let loops = 0;
+          while (this.openedBoxes.includes(nextIndex) && loops < 8) {
+            nextIndex = (nextIndex + 1) % 8;
+            loops++;
+          }
+          this.activeScanIndex = nextIndex;
+        }, 900);
+      }
+    },
+
+    mounted() {
+      this.startScanning();
     },
 
     created() {
@@ -267,9 +299,6 @@
 
       });
     },
-    mounted() {
-      // Logic removed
-    }
   });
 </script>
 
@@ -287,18 +316,19 @@
     border: 3px solid #00f3ff;
     border-radius: 20px;
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.6), inset 0 0 20px rgba(0, 243, 255, 0.3);
-    padding: 40px;
+    padding: 10px 40px;
+    margin-top: 24vh;
     width: 96%;
-    height: 85%;
+    height: 74%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
   }
 
   .topic-title {
     margin-bottom: 20px;
-    font-size: 40px;
+    font-size: 3vh;
     font-weight: bold;
     color: #00f3ff;
     text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff;
@@ -347,13 +377,13 @@
   }
 
   div#counterAni {
-    width: 150px;
-    height: 150px;
+    width: 15vh;
+    height: 15vh;
     background: radial-gradient(#ff00006b, #681bff);
     position: absolute;
-    bottom: 8%;
+    bottom: 2%;
     left: 50%;
-    margin-left: -75px;
+    margin-left: -7.5vh;
     border-radius: 100%;
     text-align: center;
   }
@@ -408,7 +438,7 @@
   }
 
   #counterText {
-    margin-top: 35px;
+    margin-top: 20%;
     color: lime;
     text-shadow: 1px 5px 3px #333;
   }

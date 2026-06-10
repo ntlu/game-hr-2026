@@ -202,7 +202,10 @@
         setTimeout(() => {
           this.currentQIndex++;
           this.answerStatus = true;
-          document.querySelectorAll('.ansPanel').forEach((el) => el.classList.remove('correct'));
+          document.querySelectorAll('.ansPanel').forEach((el) => {
+            el.classList.remove('correct');
+            el.style.opacity = '1';
+          });
           this.fadeIn = true; // Đặt fadeIn thành true sau khi thay đổi câu hỏi
         }, 100); // Thêm delay nhỏ để đảm bảo hiệu ứng hoạt động
       },
@@ -254,6 +257,13 @@
             let _tg = `ans_${tg}`;
             if (this.$refs[_tg]) {
               this.$refs[_tg].classList.add('correct', 'animate__rubberBand');
+              
+              keys.forEach(k => {
+                if (k !== tg && this.$refs[`ans_${k}`]) {
+                  this.$refs[`ans_${k}`].style.opacity = '0.75';
+                }
+              });
+
               this.playCorrectAudioSrc('../correct.mp3');
               setTimeout(() => {
                 this.$refs[_tg].classList.remove('animate__rubberBand');

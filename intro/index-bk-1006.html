@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>intro R1</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- <link rel="icon" type="image/x-icon" href="/images/favicon.ico"> -->
+    <script src="./vue-2.6.10.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <audio controls autoplay loop :src="currentSong" id="audio" ref="bgm"></audio>
+
+        <div class="container-fluid">
+            <!-- Logo -->
+            <img src="../logo.png"
+                style="position: absolute; top: 3vh; left: 3vw; width: 10vw; z-index: 10; object-fit: contain;" />
+            <!-- <video autoplay muted loop :src="bgVideoSrc"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; filter: blur(5px); opacity: 0.3;"></video> -->
+            <div v-if="bgVideoSrc === '../background-video-1.mp4'" id="roundTitleWrapper">
+                <div id="roundTitle"></div>
+            </div>
+            <div v-if="bgVideoSrc === '../background-video-1.mp4'" id="imageGridWrapper">
+                <div class="image-grid">
+                    <img v-for="i in 12" :key="i" :src="`static/${i}.png`" alt="Team Image" />
+                </div>
+            </div>
+            <video id="bg" autoplay muted loop :src="bgVideoSrc"
+                :style="bgVideoSrc === '../hen-gap-ban-ket-1.mp4' || bgVideoSrc === '../hen-gap-chung-ket.mp4' ? 'width: 100vw; height: 100vh; object-fit: fill;' : ''"></video>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data: {
+                bgVideoSrc: '../main-intro.mp4',
+                playMusic: false,
+                currentSongIndex: null,
+                playList: [
+                    // "../BGM-0.mp3",
+                    "../intro-1.mp3",
+                    "../bgm_intro_1.weba",
+                    // "../BGM-2.mp3",
+                    "../intro-ket-thuc.mp3",
+                    "../nhac-game.mp3",
+                    "../nhac-game-2.mp3",
+                ],
+            },
+            methods: {
+                toggleAudio() {
+                    const audio = document.getElementById('audio');
+                    if (this.playMusic) {
+                        audio.currentTime = 0;
+                        audio.play();
+                    } else {
+                        audio.pause();
+                    }
+                },
+            },
+            created() {
+                const _this = this;
+                const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+                channel.addEventListener('message', (event) => {
+                    console.log(event.data);
+                    const _cmd = event.data.message.cmd;
+                    const _tabIndex = event.data.message.data;
+                    if (_cmd === 'playMusic') {
+                        _this.playMusic = !_this.playMusic; // Bật hoặc tắt âm thanh khi nhận được lệnh 'playMusic'
+                        if (_tabIndex >= 0 && _tabIndex < _this.playList.length) {
+                            _this.currentSongIndex = _tabIndex; // Đặt chỉ số bài hát
+                            _this.toggleAudio(); // Gọi hàm để điều khiển âm thanh
+                        }
+                    }
+                    if (_cmd === 'showAllTeams') {
+                        // _this.bgVideoSrc = '../gioi-thieu-cac-doi-2.mp4';
+                        _this.bgVideoSrc = '../background-video-1.mp4';
+                    }
+                    if (_cmd === 'hideAllTeams') {
+                        _this.bgVideoSrc = '../main-intro.mp4';
+                    }
+                    if (_cmd === 'hengapbanket') {
+                        _this.bgVideoSrc = '../hen-gap-ban-ket-1.mp4';
+                    }
+                    if (_cmd === 'hengapchungket') {
+                        _this.bgVideoSrc = '../hen-gap-chung-ket.mp4';
+                    }
+                });
+            },
+            computed: {
+                currentSong() {
+                    return this.playList[this.currentSongIndex];
+                },
+            },
+        });
+    </script>
+</body>
+
+</html>
+<style>
+    #audio {
+        position: absolute;
+        left: -9999px;
+    }
+
+    #roundTitleWrapper {
+        position: absolute;
+        width: 60vw;
+        height: 25vh;
+        top: -2%;
+        left: 20vw;
+        z-index: 5;
+        pointer-events: none;
+    }
+
+    #roundTitle {
+        width: 100%;
+        height: 100%;
+        background-image: url('../gioi-thieu-doi-1.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+        animation: floating 3s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    #imageGridWrapper {
+        position: absolute;
+        width: 86vw;
+        height: 70vh;
+        top: 20vh;
+        /* left: 7vw; */
+        z-index: 5;
+    }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(6, minmax(1, 1fr));
+        gap: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .image-grid img {
+        filter: hue-rotate(45deg);
+        opacity: 1;
+        width: 50vw;
+        height: 12vh;
+        object-fit: contain;
+        animation: floating 3s ease-in-out infinite;
+    }
+</style>

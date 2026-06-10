@@ -1,51 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
-  <script src="./vue-2.6.10.js"></script>
-  <title>UI R6</title>
-</head>
-
-<body>
-  <div id="app" class="container">
-    <div class="row">
-      <div class="col-3">
-        <button @click="sendCmd({cmd: 'showAnswerR6',data: null})" class="btn btn-primary">1. Show Answer</button>
-      </div>
-      <div class="col-3">
-        <input type="number" class="form-control" v-model.number="second" />
-        <button @click="sendCmd({cmd: 'startCountingR6',data: second})" class="btn btn-primary">
-          2. Start countdown [{{second}}]
-        </button>
-      </div>
-      <div class="col-3">
-        <button @click="sendCmd({cmd: 'showCorrectAnswerR6',data: null})" class="btn btn-primary">
-          3. Show correct
-        </button>
-      </div>
-      <div class="col-3">
-        <button @click="sendCmd({cmd: 'nextQuestionR6',data: null})" class="btn btn-primary">4. Next question</button>
+<!DOCTYPE html><html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <script src="./vue-2.6.10.js"></script>
+    <title>UI R1</title>
+  </head>
+  <body>
+    <div id="app" class="container">
+      <div class="row">
+        <div class="col-3">
+          <button @click="sendCmd({cmd: 'showAnswerR1',data: null})" class="btn btn-primary">1. Show Answer</button>
+        </div>
+        <div class="col-3">
+          <input type="number" class="form-control" v-model.number="second" />
+          <button @click="sendCmd({cmd: 'startCountingR1',data: second})" class="btn btn-primary">
+            2. Start countdown [{{second}}]
+          </button>
+        </div>
+        <div class="col-3">
+          <button @click="sendCmd({cmd: 'showCorrectAnswerR1',data: null})" class="btn btn-primary">
+            3. Show correct
+          </button>
+        </div>
+        <div class="col-3">
+          <button @click="sendCmd({cmd: 'nextQuestionR1',data: null})" class="btn btn-primary">4. Next question</button>
+        </div>
       </div>
     </div>
-  </div>
-  <script>
-    var vm = new Vue({
-      el: '#app',
-      data: {
-        second: 10,
-      },
-      methods: {
-        sendCmd(cmd) {
-          const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
-          channel.postMessage({ message: cmd }); // Send the message
-          console.log(cmd);
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          second: 10,
         },
-      },
-    });
-  </script>
-</body>
-
+        methods: {
+          sendCmd(cmd) {
+            const channel = new BroadcastChannel('myChannel'); // Create a new broadcast channel
+            channel.postMessage({ message: cmd }); // Send the message
+            console.log(cmd);
+          },
+        },
+      });
+    </script>
+  </body>
 </html>

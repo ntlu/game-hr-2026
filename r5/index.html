@@ -45,7 +45,7 @@
                             class="svg-piece-wrapper"
                             :style="{ transformOrigin: svgCenters[i].x + 'px ' + svgCenters[i].y + 'px' }">
 
-                            <path :d="svgPaths[i]" class="svg-piece" :class="{ locked: piece.status === 'locked' }" :style="{ fill: isColorful && piece.status === 'hidden' ? pieceColors[i] : '' }" />
+                            <path :d="svgPaths[i]" class="svg-piece" :class="{ locked: piece.status === 'locked' }" :style="{ fill: isColorful && piece.status === 'hidden' ? pieceColors[i] : '', stroke: isColorful ? '#000000' : '' }" />
 
                             <text :x="svgCenters[i].x" :y="svgCenters[i].y" class="svg-piece-text"
                                 :style="{ fill: isColorful ? 'rgb(0, 0, 0)' : '', textShadow: isColorful ? 'none' : '' }"

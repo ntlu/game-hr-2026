@@ -87,7 +87,7 @@
       sfxSrc: '../end.mp3',
       // audioSrc: '../nhac-game-2.mp3',
       audioSrc: '../r21-tang-toc.mp3',
-      audioSrcQuestion: '../bgm_1.mp3',
+      // audioSrcQuestion: '../bgm_1.mp3',
       answerTrue: '../TrueC.mp3',
       answerWrong: '../wrongC.mp3',
       questionDB: qDB,
@@ -210,7 +210,7 @@
 
         this.counterTime = true;
         // this.playBGM(this.audioSrc);
-        this.playBGM(this.showMiniQuestion ? this.audioSrcQuestion : this.audioSrc);
+        this.playBGM(this.showMiniQuestion ? this.audioSrc : this.audioSrc);
         this.counterTime = seconds;
 
         // Cập nhật hiển thị ban đầu
@@ -342,7 +342,7 @@
     display: grid;
     grid-template-columns: repeat(3, 10vh) 42vh repeat(3, 10vh);
     grid-template-rows: repeat(6, 14vh);
-    gap: 1.5vh 2.5vh;
+    gap: 1.5vh 3.5vh;
   }
 
   .number-overlay {

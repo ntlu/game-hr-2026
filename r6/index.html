@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>R6 Đồng đội ơi</title>
-  <link rel="stylesheet" href="styleR6.css" />
+  <title>R1</title>
+  <link rel="stylesheet" href="styleR1.css?v=2" />
   <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="./node_modules/animate.css/animate.min.css" />
   <script src="./vue-2.6.10.js"></script>
@@ -47,7 +47,7 @@
 
     .questionBadge {
       position: absolute;
-      top: 111px;
+      top: 15vh;
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(90deg, #ff007f, #7928ca);
@@ -136,7 +136,7 @@
     </div>
   </div>
 </body>
-<script src="./r6.js"></script>
+<script src="./r1.js"></script>
 <!-- <script src="./demo_cn.js"></script> -->
 <script>
 
@@ -295,7 +295,7 @@
           }
           this.counterText = `${minutes}:${remainingSeconds}`;
         } else {
-          this.counterFontSize = '38px';
+          this.counterFontSize = '7vh';
           if (this.counterTime < 10) {
             this.counterColor = 'red';
           }
@@ -320,16 +320,16 @@
         console.log(event.data);
         let _cmd = event.data.message.cmd;
         let _data = event.data.message.data;
-        if (_cmd === 'showAnswerR6') {
+        if (_cmd === 'showAnswerR1') {
           _this.showAnswer();
         }
-        if (_cmd === 'startCountingR6') {
+        if (_cmd === 'startCountingR1') {
           _this.startCounting(_data);
         }
-        if (_cmd === 'nextQuestionR6') {
+        if (_cmd === 'nextQuestionR1') {
           _this.nextQuestion();
         }
-        if (_cmd === 'showCorrectAnswerR6') {
+        if (_cmd === 'showCorrectAnswerR1') {
           _this.showCorrectAnswer();
         }
       });

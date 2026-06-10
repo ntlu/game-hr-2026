@@ -6,13 +6,12 @@ body {
 
 video#bg {
     position: absolute;
-    top: 50%;
+    top: 0;
     left: 0;
-    width: 100%;
-    height: auto;
+    width: 100vw;
+    height: 100vh;
     object-fit: cover;
     z-index: -1;
-    transform: translateY(-50%);
 }
 
 video#bg.blur {
