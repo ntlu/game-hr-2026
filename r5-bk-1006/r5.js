@@ -1,0 +1,22 @@
+var qDB = [
+  { 'stt': 'Câu 1', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 1', 'ans': 'Đáp án 1' },
+  { 'stt': 'Câu 2', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 2', 'ans': 'Đáp án 2' },
+  { 'stt': 'Câu 3', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 3', 'ans': 'Đáp án 3' },
+  { 'stt': 'Câu 4', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 4', 'ans': 'Đáp án 4' },
+  { 'stt': 'Câu 5', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 5', 'ans': 'Đáp án 5' },
+  { 'stt': 'Câu 6', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 6', 'ans': 'Đáp án 6' },
+  { 'stt': 'Câu 7', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 7', 'ans': 'Đáp án 7' },
+  { 'stt': 'Câu 8', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 8', 'ans': 'Đáp án 8' },
+  { 'stt': 'Câu 9', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 9', 'ans': 'Đáp án 9' },
+  { 'stt': 'Câu 10', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 10', 'ans': 'Đáp án 10' },
+  { 'stt': 'Câu 11', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 11', 'ans': 'Đáp án 11' },
+  { 'stt': 'Câu 12', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 12', 'ans': 'Đáp án 12' },
+  { 'stt': 'Câu 13', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 13', 'ans': 'Đáp án 13' },
+  { 'stt': 'Câu 14', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 14', 'ans': 'Đáp án 14' },
+  { 'stt': 'Câu 15', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 15', 'ans': 'Đáp án 15' },
+  { 'stt': 'Câu 16', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 16', 'ans': 'Đáp án 16' },
+  { 'stt': 'Câu 17', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 17', 'ans': 'Đáp án 17' },
+  { 'stt': 'Câu 18', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 18', 'ans': 'Đáp án 18' },
+  { 'stt': 'Câu 19', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 19', 'ans': 'Đáp án 19' },
+  { 'stt': 'Câu 20', 'q': 'Đây là câu hỏi ví dụ dành cho câu số 20', 'ans': 'Đáp án 20' }
+];

@@ -17,22 +17,20 @@
     <div class="table-wrapper" :class="{ 'is-congrats': congratulateTeam }" v-if="showTblStatus === true">
       <div class="cyber-table animate__animated animate__zoomInDown">
         <div class="cyber-header">
-          <span class="teamName" style="color: #00f3ff; font-weight: 900; letter-spacing: 2px;">DANH SÁCH ĐỘI</span>
-          <div class="divScore" style="color: #ff007f; font-weight: 900; letter-spacing: 2px;">
-            <span class="itemsScore" style="font-size: clamp(11px, 1.8vh, 16px);">ĐỒNG ĐỘI ƠI!</span>
-            <span class="itemsScore" style="font-size: clamp(11px, 1.8vh, 16px);">LÀM CHỦ TÌNH HUỐNG</span>
-            <span class="itemsScore" style="font-size: clamp(11px, 1.8vh, 16px);">TUYÊN TRUYỀN</span>
-            <span class="itemsScore" style="color: #ffdf00;">TỔNG</span>
+          <span class="teamName" style="color: #00f3ff; font-weight: 900; letter-spacing: 0px;">TÊN ĐỘI</span>
+          <div class="divScore" style="color: #ff007f; font-weight: 900; letter-spacing: 0px;">
+            <span class="itemsScore mt-1">ĐỒNG<br>ĐỘI ƠI!</span>
+            <span class="itemsScore mt-1">LÀM CHỦ<br>TÌNH HUỐNG</span>
+            <span class="itemsScore mt-1">TUYÊN<br>TRUYỀN</span>
+            <span class="itemsScore" style="color: #ffdf00; font-size: 4.2vh">TỔNG</span>
           </div>
         </div>
 
         <transition-group name="list" tag="div" class="list-wrapper">
-          <div v-for="item in items" :key="item.id" class="cyber-row"
+          <div v-for="item in items" :key="item.id" class="cyber-row" :class="{ 'is-gray': item.isGray }"
             :style="{backgroundColor: item.isGray ? 'rgba(255, 0, 0, 0.2)' : 'transparent'}">
             <span class="teamName" :style="{ color: item.isGray ? '#ff6b6b' : 'white' }">{{ 'Đội ' + item.id + ':\u00A0'
-              +
-              item.name
-              }}</span>
+              + item.name }}</span>
             <div class="divScore" :style="{ color: item.isGray ? '#ff6b6b' : 'white' }">
               <span class="itemsScore score-r1">{{item.r1}}</span>
               <span class="itemsScore score-r21">{{item.r21}}</span>
@@ -60,9 +58,9 @@
 
 <script>
   const initialItems = [
-    { id: 1, name: 'Cansport 1', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 2, name: 'Cansport 2', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 3, name: 'Cansport 3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 1, name: 'VN 1', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 2, name: 'VN 2', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 3, name: 'VN 3', r1: 0, r21: 0, r22: 0, totalScore: 0, isGray: false },
   ];
 
   const vm = new Vue({
@@ -100,6 +98,7 @@
           this.items = this.items.filter(team => !team.isGray);
         }
         this.congratulateTeam = true;
+        this.showTblStatus = false;
       },
 
       resetItems() {
@@ -177,8 +176,8 @@
     border: 2px solid rgba(0, 243, 255, 0.5);
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(0, 243, 255, 0.1);
     border-radius: 15px;
-    padding: clamp(15px, 2.5vh, 25px) clamp(20px, 3vw, 40px);
-    width: 97vw;
+    padding: clamp(10px, 1.5vh, 25px) 20px;
+    width: 86vw;
     position: relative;
   }
 
@@ -227,8 +226,34 @@
     /* Tự động co giãn khoảng cách */
   }
 
+  .cyber-row.is-gray {
+    filter: grayscale(1) opacity(1);
+    pointer-events: none;
+  }
+
   .is-congrats .cyber-row {
-    padding: 0 !important;
+    padding: clamp(1px, 0.4vh, 6px) 10px !important;
+  }
+
+  .is-congrats .teamName {
+    font-size: clamp(12px, 2.2vh, 32px);
+  }
+
+  .is-congrats .itemsScore {
+    font-size: clamp(14px, 2.6vh, 24px);
+  }
+
+  .is-congrats .cyber-header .itemsScore {
+    font-size: clamp(12px, 2vh, 20px);
+  }
+
+  .is-congrats .cyber-table {
+    padding: clamp(5px, 0.8vh, 15px) 20px;
+  }
+
+  .is-congrats .cyber-header {
+    padding-bottom: clamp(3px, 0.6vh, 10px);
+    margin-bottom: clamp(3px, 0.8vh, 10px);
   }
 
   .list-move {
@@ -240,10 +265,10 @@
   }
 
   .teamName {
-    width: 400px;
+    width: 38%;
+    flex-shrink: 0;
     /* === CỠ CHỮ TÊN ĐỘI === */
-    font-size: clamp(12px, 2.4vh, 25px);
-    /* Nhỏ nhất là 12px, lớn nhất là 18px */
+    font-size: clamp(3vh, 3.2vh, 3.5vh);
     font-weight: 700;
   }
 
@@ -251,20 +276,21 @@
     display: flex;
     flex: 1;
     justify-content: space-around;
-    gap: 8px;
+    gap: 1.5vw;
   }
 
   .itemsScore {
-    width: 160px;
+    flex: 1;
+    min-width: 0;
     text-align: center;
     /* === CỠ CHỮ ĐIỂM SỐ === */
-    font-size: clamp(16px, 3vh, 22px);
+    font-size: clamp(3vh, 4vh, 4vh);
     font-weight: 700;
     line-height: 1.1;
   }
 
   .cyber-header .itemsScore {
-    font-size: clamp(14px, 2vh, 20px);
+    font-size: clamp(16px, 2.2vh, 24px);
     font-weight: 900;
   }
 
@@ -279,26 +305,26 @@
   }
 
   .score-r1 {
-    background: linear-gradient(90deg, #0052d4, #4364f7, #6fb1fc);
+    background: linear-gradient(90deg, #0052d4);
     box-shadow: 0 0 10px rgba(67, 100, 247, 0.5);
     padding: 2px 10px;
   }
 
   .score-r21 {
-    background: linear-gradient(90deg, #11998e, #38ef7d);
+    background: linear-gradient(90deg, #0052d4);
     box-shadow: 0 0 10px rgba(56, 239, 125, 0.5);
     padding: 2px 10px;
   }
 
   .score-r22 {
-    background: linear-gradient(90deg, #ff007f, #7928ca);
+    background: linear-gradient(90deg, #0052d4);
     box-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
   }
 
   .total-score {
-    background: linear-gradient(90deg, #ffdf00, #ffffff);
+    background: linear-gradient(165deg, #ffdf00, #ffe7e7);
     box-shadow: 0 0 15px rgba(255, 223, 0, 0.6);
-    color: #000;
+    color: #ff0000;
     /* Chữ màu đen để nổi bật trên nền vàng trắng */
   }
 
@@ -369,7 +395,7 @@
     left: 50%;
     /* Tùy chỉnh kích thước Top 1 */
     /* font-size: clamp(35px, 3vw, 80px); */
-    font-size: 33px;
+    font-size: 40px;
     width: 25vw;
     height: auto;
   }
@@ -379,10 +405,10 @@
     /* Bạc */
     border: 3px solid #c0c0c0;
     box-shadow: 0 0 20px rgba(192, 192, 192, 0.5), inset 0 0 10px rgba(192, 192, 192, 0.2);
-    top: 44%;
+    top: 45%;
     left: 15%;
     /* Tùy chỉnh kích thước Top 2 */
-    font-size: 20px;
+    font-size: 30px;
     width: 18vw;
     height: auto;
   }
@@ -395,8 +421,8 @@
     top: 46%;
     left: 85%;
     /* Tùy chỉnh kích thước Top 3 */
-    font-size: 20px;
-    width: 20vw;
+    font-size: 30px;
+    width: 18vw;
     height: auto;
   }
 

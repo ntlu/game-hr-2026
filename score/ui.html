@@ -41,7 +41,7 @@
       </div>
       <ul style="width: 100%; margin: 0 auto; flex-direction: column;">
         <transition-group name="list" tag="div" style="width: 100%; display: flex; flex-direction: column;">
-          <li v-for="item in items" :key="item.id" :style="{ backgroundColor: item.isGray ? 'gray' : 'transparent' }"
+          <li v-for="item in items" :key="item.id" :class="{ 'is-gray': item.isGray }"
             style="display: flex; align-items: center; width: 100%; overflow: hidden;">
             <span class="teamName" style="flex: 0 0 25%; max-width: 180px;">{{ item.id + ':\u00A0' + item.name }}</span>
             <div style="flex: 1; display: flex; justify-content: center; gap: 25px;">
@@ -64,16 +64,13 @@
     { id: 3, name: 'F2', r1: 3, r21: 0, r22: 0, totalScore: 0, isGray: false },
     { id: 4, name: 'F4', r1: 4, r21: 0, r22: 0, totalScore: 0, isGray: false },
     { id: 5, name: 'E1', r1: 5, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 6, name: 'E3', r1: 6, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 7, name: 'E4', r1: 7, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 8, name: 'E5', r1: 1, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 9, name: 'PDPT+PDPP+PD00M', r1: 2, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 10, name: 'QC', r1: 3, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 11, name: 'PCC', r1: 4, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 12, name: 'BOD', r1: 5, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 13, name: 'KVP', r1: 6, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 14, name: 'GIA LỘC', r1: 7, r21: 0, r22: 0, totalScore: 0, isGray: false },
-    { id: 15, name: 'TÂN HỘI', r1: 8, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 6, name: 'E4', r1: 6, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 7, name: 'E5', r1: 7, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 8, name: 'PDPT', r1: 8, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 9, name: 'QC', r1: 9, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 10, name: 'BOD', r1: 10, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 11, name: 'CR + ACC', r1: 11, r21: 0, r22: 0, totalScore: 0, isGray: false },
+    { id: 12, name: 'TRẢNG BÀNG', r1: 12, r21: 0, r22: 0, totalScore: 0, isGray: false },
   ];
 
   const vm = new Vue({
@@ -185,6 +182,11 @@
     margin-bottom: 0;
     display: flex;
     align-items: center;
+  }
+
+  li.is-gray {
+    filter: grayscale(1) opacity(0.4);
+    background-color: rgba(0, 0, 0, 0.15) !important;
   }
 
   li:last-child {

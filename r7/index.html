@@ -13,17 +13,17 @@
     @keyframes floatContinuous {
       0% {
         transform: translateY(0px);
-        filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.2));
+        filter: hue-rotate(var(--hue, 150deg)) drop-shadow(0 0 5px rgba(0, 243, 255, 0.2));
       }
 
       50% {
         transform: translateY(-10px);
-        filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.7));
+        filter: hue-rotate(var(--hue, 150deg)) drop-shadow(0 0 20px rgba(0, 243, 255, 0.7));
       }
 
       100% {
         transform: translateY(0px);
-        filter: drop-shadow(0 0 5px rgba(0, 243, 255, 0.2));
+        filter: hue-rotate(var(--hue, 150deg)) drop-shadow(0 0 5px rgba(0, 243, 255, 0.2));
       }
     }
 
@@ -31,17 +31,18 @@
       animation: floatContinuous 3s ease-in-out infinite;
       transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.3s;
       position: relative;
+      filter: hue-rotate(var(--hue, 150deg));
     }
 
     .floating-img:hover {
       animation-play-state: paused;
       transform: scale(1.08) translateY(-5px) !important;
-      filter: drop-shadow(0 10px 25px rgba(0, 243, 255, 0.9)) !important;
+      filter: hue-rotate(var(--hue, 150deg)) drop-shadow(0 10px 25px rgba(0, 243, 255, 0.9)) !important;
       z-index: 10;
     }
 
     .grayscale-img {
-      filter: grayscale(100%) opacity(0.4) !important;
+      filter: grayscale(100%) opacity(0.3) !important;
       pointer-events: none;
     }
   </style>
@@ -57,7 +58,7 @@
 
       <!-- Image Grid -->
       <div class="image-grid-container d-flex justify-content-center align-items-center"
-        style="position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); z-index: 1; width: 80vw;">
+        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; width: 80vw;">
         <div class="row w-100 justify-content-center px-4">
           <div class="col-3 p-1 d-flex justify-content-center animate__animated animate__zoomIn" v-for="i in 8" :key="i"
             :style="`animation-delay: ${i * 0.1}s;`">
@@ -65,14 +66,14 @@
               :class="{'animate__animated animate__tada animate__infinite': animatingBox === (i - 1)}">
               <img :src="`./static/${i}.png`" class="img-fluid floating-img"
                 :class="{'grayscale-img': openedBoxes.includes(i - 1)}"
-                :style="`animation-delay: ${(i % 4) * 0.2}s; max-height: 32vh; object-fit: contain; cursor: pointer;`" />
+                :style="`--hue: 135deg; animation-delay: ${(i % 4) * 0.2}s; max-height: 32vh; object-fit: contain; cursor: pointer;`" />
             </div>
           </div>
         </div>
       </div>
 
       <div v-if="showMiniQuestion" class="row m-0 w-100 h-100 animate__animated animate__fadeIn"
-        style="position: absolute; top: 0; left: 0; z-index: 1; background: rgba(0,0,0,0.5);">
+        style="position: absolute; top: 0; left: 0; z-index: 1; background: rgba(0,0,0,0.2);">
         <div class="col-12 p-0 h-100 d-flex flex-column justify-content-center align-items-center">
           <div id="questionHolder">
             <span v-if="currentQIndex >= 0" class="topic-title">
@@ -195,7 +196,7 @@
       },
       updateCounterDisplay() {
         if (this.counterTime > 60) {
-          this.counterFontSize = '40px';
+          this.counterFontSize = '60px';
           this.counterColor = 'lime';
 
           // Tính toán phút và giây còn lại
@@ -206,7 +207,7 @@
           }
           this.counterText = `${minutes}:${remainingSeconds}`;
         } else {
-          this.counterFontSize = '40px';
+          this.counterFontSize = '60px';
           if (this.counterTime < 10) {
             this.counterColor = 'red';
           }
@@ -346,13 +347,13 @@
   }
 
   div#counterAni {
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(#0dcaf06b, #681bff);
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(#ff00006b, #681bff);
     position: absolute;
-    bottom: 2%;
+    bottom: 8%;
     left: 50%;
-    margin-left: -50px;
+    margin-left: -75px;
     border-radius: 100%;
     text-align: center;
   }
@@ -407,7 +408,7 @@
   }
 
   #counterText {
-    margin-top: 25px;
+    margin-top: 35px;
     color: lime;
     text-shadow: 1px 5px 3px #333;
   }

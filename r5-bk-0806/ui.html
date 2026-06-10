@@ -85,22 +85,18 @@
             <div class="col-md-6">
                 <div class="controls-panel">
                     <h4 class="mb-3">2. Điều khiển hình ảnh bí ẩn</h4>
-                    <div class="d-flex flex-wrap gap-2 mb-3">
+                    <div class="d-flex gap-2 mb-3">
                         <input type="number" class="form-control" v-model.number="second30" style="max-width: 80px;">
                         <button @click="sendCmd('startFinalTimer', second30)" class="btn btn-warning fw-bold">Đếm ngược
                             {{second30}}s (Hình ảnh lớn)</button>
-                        <button @click="sendCmd('revealImage')" class="btn btn-success fw-bold">Mở toàn bộ hình ảnh</button>
-                        <button @click="sendCmd('hideImage')" class="btn btn-info fw-bold">Tiếp tục (Khôi phục)</button>
+                        <button @click="sendCmd('revealImage')" class="btn btn-success fw-bold">Mở toàn bộ hình ảnh (MC
+                            đọc lệnh)</button>
                     </div>
                 </div>
                 <div class="controls-panel">
                     <h4 class="mb-3 text-danger">3. Làm lại từ đầu (Reset)</h4>
-                    <button @click="resetGame()" class="btn btn-danger fw-bold w-100 py-3 mb-3">RESET TOÀN BỘ TRẠNG THÁI
+                    <button @click="resetGame()" class="btn btn-danger fw-bold w-100 py-3">RESET TOÀN BỘ TRẠNG THÁI
                         GAME</button>
-                </div>
-                <div class="controls-panel">
-                    <h4 class="mb-3 text-info">4. Giao diện</h4>
-                    <button @click="toggleColorful()" class="btn btn-primary fw-bold w-100 py-3">Bật / Tắt chế độ Nhiều Màu</button>
                 </div>
             </div>
         </div>
@@ -147,9 +143,6 @@
                     this.pieces.forEach(p => p.status = 'hidden');
                     this.activeIndex = null;
                     this.sendCmd('resetGame');
-                },
-                toggleColorful() {
-                    this.sendCmd('toggleColorful');
                 }
             }
         });

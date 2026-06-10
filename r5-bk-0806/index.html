@@ -29,38 +29,14 @@
                 :class="{ revealed: showFullImage, 'overflow-visible': animatingPiece }"
                 style="background-image: url('static/big-img-2.png');">
                 <div class="pieces-grid">
-                    <svg viewBox="0 0 1920 1080" preserveAspectRatio="none"
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;">
-                        <defs>
-                            <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feGaussianBlur stdDeviation="6" result="blur" />
-                                <feMerge>
-                                    <feMergeNode in="blur" />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <g v-for="(piece, i) in pieces" :key="i"
-                            :class="[{ solved: piece.status === 'solved', shaking: i === animatingPieceIndex }]"
-                            class="svg-piece-wrapper"
-                            :style="{ transformOrigin: svgCenters[i].x + 'px ' + svgCenters[i].y + 'px' }">
-
-                            <path :d="svgPaths[i]" class="svg-piece" :class="{ locked: piece.status === 'locked' }" :style="{ fill: isColorful && piece.status === 'hidden' ? pieceColors[i] : '' }" />
-
-                            <text :x="svgCenters[i].x" :y="svgCenters[i].y" class="svg-piece-text"
-                                :style="{ fill: isColorful ? 'rgb(0, 0, 0)' : '', textShadow: isColorful ? 'none' : '' }"
-                                v-if="piece.status === 'hidden' && !showFullImage" alignment-baseline="middle"
-                                text-anchor="middle">
-                                {{ piece.id }}
-                            </text>
-
-                            <!-- Clone for zooming out -->
-                            <text v-if="i === animatingPieceIndex" :x="svgCenters[i].x" :y="svgCenters[i].y"
-                                class="svg-piece-text-clone" alignment-baseline="middle" text-anchor="middle">
-                                {{ piece.id }}
-                            </text>
-                        </g>
-                    </svg>
+                    <div class="piece" v-for="(piece, i) in pieces" :key="i"
+                        :class="{ locked: piece.status === 'locked', solved: piece.status === 'solved', shaking: i === animatingPieceIndex }">
+                        <span v-if="piece.status !== 'solved' && !showFullImage">{{ piece.id }}</span>
+                        <!-- Clone for zooming out while original piece stays to cover the image -->
+                        <div v-if="i === animatingPieceIndex" class="piece-zoom-clone">
+                            {{ piece.id }}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -103,84 +79,6 @@
 
     <script src="./r5.js"></script>
     <script>
-        const COLS = 5;
-        const ROWS = 4;
-        const W = 384;
-        const H = 270;
-        const TAB = 40;
-
-        function randomTab() {
-            return Math.random() > 0.5 ? 1 : -1;
-        }
-
-        function buildEdge(x1, y1, x2, y2, type) {
-            if (type === 0) {
-                return `L ${x2} ${y2}`;
-            }
-            const dx = x2 - x1;
-            const dy = y2 - y1;
-            const len = Math.hypot(dx, dy);
-            const u = dx / len;
-            const v = dy / len;
-            
-            const mx = (x1 + x2) / 2;
-            const my = (y1 + y2) / 2;
-            
-            const sx = mx - TAB * u;
-            const sy = my - TAB * v;
-            
-            const ex = mx + TAB * u;
-            const ey = my + TAB * v;
-            
-            const sweep = type === 1 ? 1 : 0;
-            
-            return `L ${sx} ${sy} A ${TAB} ${TAB} 0 0 ${sweep} ${ex} ${ey} L ${x2} ${y2}`;
-        }
-
-        function buildPiece(x, y, left, right, top, bottom) {
-            const pTop = buildEdge(x, y, x + W, y, top);
-            const pRight = buildEdge(x + W, y, x + W, y + H, right);
-            const pBottom = buildEdge(x + W, y + H, x, y + H, bottom);
-            const pLeft = buildEdge(x, y + H, x, y, left);
-            
-            return `M ${x} ${y} ${pTop} ${pRight} ${pBottom} ${pLeft} Z`;
-        }
-
-        function generatePuzzle() {
-            const connections = [];
-            for (let r = 0; r < ROWS; r++) {
-                const rowArr = [];
-                for (let c = 0; c < COLS; c++) {
-                    rowArr.push({ right: 0, bottom: 0 });
-                }
-                connections.push(rowArr);
-            }
-
-            const paths = [];
-            const centers = [];
-            for (let row = 0; row < ROWS; row++) {
-                for (let col = 0; col < COLS; col++) {
-                    
-                    const left = col === 0 ? 0 : connections[row][col-1].right * -1;
-                    const right = col === COLS-1 ? 0 : randomTab();
-                    const top = row === 0 ? 0 : connections[row-1][col].bottom * -1;
-                    const bottom = row === ROWS-1 ? 0 : randomTab();
-
-                    connections[row][col].right = right;
-                    connections[row][col].bottom = bottom;
-
-                    paths.push(buildPiece(col * W, row * H, left, right, top, bottom));
-                    centers.push({
-                        x: col * W + W / 2,
-                        y: row * H + H / 2
-                    });
-                }
-            }
-            return { paths, centers };
-        }
-
-        const puzzleData = generatePuzzle();
-
         const vm = new Vue({
             el: '#app',
             data: () => ({
@@ -191,15 +89,6 @@
                     id: i + 1,
                     status: 'hidden' // hidden | locked | solved
                 })),
-                isColorful: false,
-                pieceColors: [
-                    '#e57373', '#81c784', '#64b5f6', '#fff176', '#ba68c8',
-                    '#4dd0e1', '#ffb74d', '#9575cd', '#4db6ac', '#f06292',
-                    '#aed581', '#7986cb', '#ffd54f', '#4fc3f7', '#ff8a65',
-                    '#dce775', '#ff9800', '#00bcd4', '#8bc34a', '#e91e63'
-                ],
-                svgPaths: puzzleData.paths,
-                svgCenters: puzzleData.centers,
                 currentPieceIndex: null,
                 showQuestion: false,
                 showAnswer: false,
@@ -375,12 +264,6 @@
                     else if (_cmd === 'revealImage') {
                         _this.showFullImage = true;
                         _this.showFinalTimer = false;
-                    }
-                    else if (_cmd === 'hideImage') {
-                        _this.showFullImage = false;
-                    }
-                    else if (_cmd === 'toggleColorful') {
-                        _this.isColorful = !_this.isColorful;
                     }
                     else if (_cmd === 'resetGame') {
                         _this.pieces.forEach(p => p.status = 'hidden');

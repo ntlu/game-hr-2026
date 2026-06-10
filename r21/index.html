@@ -22,21 +22,22 @@
       <div class="row">
         <div class="col-12 questionWrapper animate__animated animate__fadeIn">
           <div v-show="counterTime" id="counterAni" class="animate__animated animate__rollIn"
-            :style="{ top: showMiniQuestion ? '83vh' : '45vh', left: showMiniQuestion ? '43vw' : '71vw', width: showMiniQuestion ? '20vh' : '26vh', height: showMiniQuestion ? '20vh' : '26vh' }">
+            :style="{ top: showMiniQuestion ? '75vh' : '40vh', left: '50vw', marginLeft: showMiniQuestion ? '-10vh' : '-13vh', width: showMiniQuestion ? '20vh' : '26vh', height: showMiniQuestion ? '20vh' : '26vh' }">
             <div id="outer"></div>
             <div id="inner"></div>
-            <h3 id="counterText" style="text-shadow: 1px 5px 3px #333; margin: 0; text-align: center;"
-              :style="{ color: counterTime <= 10 ? 'red' : 'lime', fontSize: showMiniQuestion ? '5vh' : '8vh', lineHeight: showMiniQuestion ? '20vh' : '26vh' }"
+            <h3 id="counterText" style="text-shadow: 1px 0.46vh 3px #333; margin: 0; text-align: center;"
+              :style="{ color: counterTime <= 10 ? 'red' : 'lime', fontSize: showMiniQuestion ? '8vh' : '10vh', lineHeight: showMiniQuestion ? '20vh' : '26vh' }"
               ref="counterText" v-html="counterText"></h3>
           </div>
           <div v-if="showMiniQuestion"
-            style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 50; background: rgba(0, 0, 0, 1); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
+            style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 50; background: rgba(0, 0, 0, 1); backdrop-filter: blur(1.39vh); -webkit-backdrop-filter: blur(1.39vh);">
             <div class="container-small-question">
               <video id="bg-question" class="blur" autoplay muted loop src="../bg-video-2.mp4"></video>
               <div class="row">
                 <div class="col-12 questionWrapper animate__animated animate__fadeIn">
                   <!-- CÂU badge -->
                   <div class="questionBadge">CÂU {{currentQIndex + 1}}</div>
+                  <div class="scoreText">({{questionDB[currentQIndex].score}} điểm)</div>
 
                   <div id="questionHolder">
                     <!-- cau hoi -->
@@ -50,8 +51,7 @@
             </div>
           </div>
 
-          <div id="imageLogoTangToc"
-            :style="{ right: showMiniQuestion ? '33vw' : '3vw', top: (counterTime || showMiniQuestion) ? '2vh' : '15vh' }">
+          <div id="imageLogoTangToc" :style="{ top: (counterTime || showMiniQuestion) ? '2vh' : '35vh' }">
           </div>
           <div id="containerQuestion">
             <div class="row" style="flex-direction: column;">
@@ -59,8 +59,8 @@
                 <div v-for="(question, index) in questionDB" :key="index" class="grid-item" :class="{ 
                       'animate-balloon-pop': animateColor && currentQIndex === index 
                     }"
-                  :style="{ animation: 'floatingBalloon ' + (2.5 + (index % 3) * 0.5) + 's ease-in-out infinite alternate', animationDelay: (index * 0.1) + 's' }">
-                  <img style="width: 75%;" :src="question.img" :alt="question.stt"
+                  :style="{ visibility: grayscaleStatus[index] ? 'hidden' : 'visible', animation: 'floatingBalloon ' + (2.5 + (index % 3) * 0.5) + 's ease-in-out infinite alternate', animationDelay: (index * 0.1) + 's', gridColumn: (index % 6 < 3) ? (index % 6 + 1) : (index % 6 + 2), gridRow: Math.floor(index / 6) + 1 }">
+                  <img style="width: 100%;" :src="question.img" :alt="question.stt"
                     :style="{ filter: grayscaleStatus[index] ? 'grayscale(1) brightness(0.6)' : `hue-rotate(${index * 35}deg)` }">
                   <div class="number-overlay" :style="{ opacity: grayscaleStatus[index] ? 0.5 : 1 }">
                     {{ index + 1 }}
@@ -82,10 +82,11 @@
       tickerInterval: null,
       counterText: '00:00',
       counterColor: 'lime',
-      counterFontSize: '40px',
+      counterFontSize: '3.7vh',
       counterTime: 0,
       sfxSrc: '../end.mp3',
-      audioSrc: '../nhac-game-2.mp3',
+      // audioSrc: '../nhac-game-2.mp3',
+      audioSrc: '../r21-tang-toc.mp3',
       audioSrcQuestion: '../bgm_1.mp3',
       answerTrue: '../TrueC.mp3',
       answerWrong: '../wrongC.mp3',
@@ -182,7 +183,7 @@
 
       updateCounterDisplay() {
         if (this.counterTime > 60) {
-          this.counterFontSize = '23px';
+          this.counterFontSize = '2.13vh';
           this.counterColor = 'lime';
 
           // Tính toán phút và giây còn lại
@@ -193,7 +194,7 @@
           }
           this.counterText = `${minutes}:${remainingSeconds}`;
         } else {
-          this.counterFontSize = '38px';
+          this.counterFontSize = '3.52vh';
           if (this.counterTime < 10) {
             this.counterColor = 'red';
           }
@@ -297,13 +298,14 @@
     background-image: url(../tang-toc2.png);
     background-size: contain;
     position: absolute;
-    right: 0%;
-    width: 35vw;
+    left: 50vw;
+    margin-left: -22.5vh;
+    width: 45vh;
     height: 25vh;
     background-repeat: no-repeat;
     background-position: center center;
     z-index: 60;
-    transition: right 0.5s ease-in-out, top 1s ease-in-out;
+    transition: left 0.5s ease-in-out, top 1s ease-in-out;
     animation: floatAndPulse 4s ease-in-out infinite;
   }
 
@@ -314,8 +316,8 @@
     }
 
     50% {
-      transform: translateY(-8px) scale(1.03);
-      filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+      transform: translateY(-0.74vh) scale(1.03);
+      filter: drop-shadow(0 0 1.11vh rgba(255, 255, 255, 0.7));
     }
 
     100% {
@@ -326,20 +328,21 @@
 
   #containerQuestion {
     position: absolute;
-    top: 57vh;
-    left: 2vw;
-    transform: translateY(-50%);
+    top: 55vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 5;
+    width: 100vw;
   }
 
   .grid-container {
     display: grid;
-    grid-template-columns: repeat(6, 12.5vh);
-    grid-template-rows: repeat(6, 12.5vh);
-    gap: 2.5vh 1vh;
+    grid-template-columns: repeat(3, 10vh) 42vh repeat(3, 10vh);
+    grid-template-rows: repeat(6, 14vh);
+    gap: 1.5vh 2.5vh;
   }
 
   .number-overlay {
@@ -381,7 +384,7 @@
 
     60% {
       transform: scale(2.5);
-      filter: brightness(3) drop-shadow(0 0 20px #fff);
+      filter: brightness(3) drop-shadow(0 0 1.85vh #fff);
       opacity: 0.9;
     }
 
@@ -398,15 +401,15 @@
     }
 
     /* 33% {
-      transform: translate(-7px, -7px);
+      transform: translate(-0.65vh, -0.65vh);
     } */
 
     50% {
-      transform: translate(5px, -14px);
+      transform: translate(0.46vh, -1.3vh);
     }
 
     100% {
-      transform: translate(0px, -20px);
+      transform: translate(0px, -1.85vh);
     }
   }
 
@@ -431,10 +434,19 @@
   }
 
 
+  html,
   body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    height: 100%;
+    width: 100%;
+  }
+
+  #app,
+  .container-fluid {
+    height: 100%;
+    width: 100%;
   }
 
   video#bg {
@@ -445,7 +457,7 @@
     height: 100%;
     object-fit: cover;
     z-index: -1;
-    filter: blur(7px);
+    filter: blur(0.65vh);
   }
 
   video#bg-question {
@@ -453,10 +465,10 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 50%;
+    height: 100%;
     object-fit: cover;
     z-index: -1;
-    filter: blur(7px);
+    filter: blur(0.65vh);
   }
 
   .questionWrapper {
@@ -466,14 +478,14 @@
   #questionHolder {
     background: linear-gradient(135deg, rgba(8, 25, 70, .88), rgba(25, 10, 80, .88));
     border: 4px solid rgba(100, 150, 255, 0.8);
-    box-shadow: 0 0 20px rgba(0, 255, 255, .3), 0 0 50px rgba(140, 0, 255, .3), inset 0 0 25px rgba(0, 255, 255, .1);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 0 1.85vh rgba(0, 255, 255, .3), 0 0 4.63vh rgba(140, 0, 255, .3), inset 0 0 2.31vh rgba(0, 255, 255, .1);
+    backdrop-filter: blur(1.39vh);
+    -webkit-backdrop-filter: blur(1.39vh);
     clip-path: polygon(6% 0, 94% 0, 100% 18%, 100% 82%, 94% 100%, 6% 100%, 0 82%, 0 18%);
     width: 100%;
     max-width: calc(65vh * (1705 / 726));
-    margin: 200px auto 0;
-    padding: 60px 40px;
+    margin: 21vh auto 0;
+    padding: 10vh 3.7vh;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -481,7 +493,7 @@
     justify-content: flex-start;
     animation: pulseBorderOrange 4s infinite alternate;
     z-index: 20;
-    min-height: 400px;
+    min-height: 37.04vh;
   }
 
   #questionHolder::after {
@@ -492,85 +504,98 @@
     right: 0;
     bottom: 0;
     background: linear-gradient(to bottom, transparent 50%, rgba(0, 243, 255, 0.05) 51%);
-    background-size: 100% 8px;
+    background-size: 100% 0.74vh;
     pointer-events: none;
     z-index: 1;
   }
 
   @keyframes pulseBorderOrange {
     0% {
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 15px rgba(0, 255, 255, 0.2);
+      box-shadow: 0 0 1.85vh rgba(0, 255, 255, 0.3), inset 0 0 1.39vh rgba(0, 255, 255, 0.2);
     }
 
     100% {
-      box-shadow: 0 0 45px rgba(0, 255, 255, 0.8), inset 0 0 25px rgba(0, 255, 255, 0.5);
+      box-shadow: 0 0 4.17vh rgba(0, 255, 255, 0.8), inset 0 0 2.31vh rgba(0, 255, 255, 0.5);
     }
   }
 
   .questionBadge {
     position: absolute;
-    top: 170px;
+    top: 21vh;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(90deg, #ff007f, #7928ca);
     color: #ffffff;
-    padding: 8px 45px;
-    font-size: 28px;
+    padding: 0.74vh 4.17vh;
+    font-size: 2.59vh;
     font-weight: 900;
     font-family: 'Montserrat', 'Segoe UI', sans-serif;
     text-transform: uppercase;
-    box-shadow: 0 0 25px rgba(255, 0, 127, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 2.31vh rgba(255, 0, 127, 0.8), inset 0 0 0.93vh rgba(255, 255, 255, 0.4);
     border: 2px solid rgba(255, 255, 255, 0.6);
     z-index: 30;
     letter-spacing: 4px;
     clip-path: polygon(15% 0, 85% 0, 100% 50%, 85% 100%, 15% 100%, 0% 50%);
   }
 
+  .scoreText {
+    position: absolute;
+    top: 27vh;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffea00;
+    font-size: 3.5vh;
+    font-weight: bold;
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
+    text-shadow: 2px 2px 0.93vh #000, 0 0 1.39vh #ff007f;
+    z-index: 30;
+  }
+
   .questions {
     width: 90%;
     text-align: center;
-    font-size: clamp(38px, 5.4vh, 50px) !important;
+    font-size: clamp(3.52vh, 5.4vh, 4.63vh) !important;
     font-weight: bold;
     color: #ffffff !important;
     font-family: 'Montserrat', 'Segoe UI', arial, sans-serif;
-    text-shadow: 0 0 10px rgba(255, 255, 255, .3), 0 0 25px rgba(0, 255, 255, .25), 0 4px 8px rgba(0, 0, 0, .8);
+    text-shadow: 0 0 0.93vh rgba(255, 255, 255, .3), 0 0 2.31vh rgba(0, 255, 255, .25), 0 4px 0.74vh rgba(0, 0, 0, .8);
     line-height: 1.4;
     z-index: 10;
   }
 
   .correctAnswer {
     width: 85%;
-    margin-top: 40px;
-    padding: 20px 40px;
+    margin-top: 3.7vh;
+    padding: 1.85vh 3.7vh;
     font-family: 'Montserrat', 'Segoe UI', arial, sans-serif;
     text-align: center;
-    font-size: 38px !important;
+    font-size: 3.52vh !important;
     font-weight: bold;
     color: #ffffff !important;
     background: rgba(0, 255, 100, 0.3);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(1.11vh);
+    -webkit-backdrop-filter: blur(1.11vh);
     border: 3px solid #00ff64;
     clip-path: polygon(4% 0, 96% 0, 100% 50%, 96% 100%, 4% 100%, 0% 50%);
-    box-shadow: 0 0 35px rgba(0, 255, 100, 0.8), inset 0 0 25px rgba(0, 255, 100, 0.5);
-    text-shadow: 0 0 15px #00ff64, 0 3px 5px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 3.24vh rgba(0, 255, 100, 0.8), inset 0 0 2.31vh rgba(0, 255, 100, 0.5);
+    text-shadow: 0 0 1.39vh #00ff64, 0 3px 0.46vh rgba(0, 0, 0, 0.9);
     animation: correctPulse 1s infinite alternate;
     z-index: 10;
   }
 
   @keyframes correctPulse {
     0% {
-      box-shadow: 0 0 20px rgba(0, 255, 100, 0.5), inset 0 0 15px rgba(0, 255, 100, 0.3);
+      box-shadow: 0 0 1.85vh rgba(0, 255, 100, 0.5), inset 0 0 1.39vh rgba(0, 255, 100, 0.3);
     }
 
     100% {
-      box-shadow: 0 0 60px rgba(0, 255, 100, 1), inset 0 0 35px rgba(0, 255, 100, 0.8);
+      box-shadow: 0 0 5.56vh rgba(0, 255, 100, 1), inset 0 0 3.24vh rgba(0, 255, 100, 0.8);
     }
   }
 
   div#counterAni {
-    width: 180px;
-    height: 180px;
+    width: 16.67vh;
+    height: 16.67vh;
     background: radial-gradient(#0dcaf06b, #681bff);
     position: absolute;
     top: 140%;
@@ -632,8 +657,8 @@
     background: url(../normal.png) no-repeat;
     background-size: contain;
     width: 50vw;
-    height: 167px;
-    margin: -30px 0 0 0;
+    height: 15.46vh;
+    margin: -2.78vh 0 0 0;
     display: flex;
     position: relative;
     flex-direction: row;
@@ -652,12 +677,12 @@
     width: 70%;
     text-align: center;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 1.85vh;
     margin: 0 auto;
   }
 
   .showCorrectAnswer {
-    font-size: 50px !important;
+    font-size: 4.63vh !important;
     margin-top: 2%;
   }
 

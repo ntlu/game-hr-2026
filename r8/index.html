@@ -16,7 +16,8 @@
     <audio class="d-none" loop src="audioSrc" id="audio" ref="bgm"></audio>
     <audio class="d-none" :src="sfxSrc" id="audio" ref="sfx"></audio>
     <div class="container-fluid">
-      <video id="bg" autoplay muted loop src="../tuyen-truyen-vien-1.mp4"></video>
+      <video id="bg" autoplay muted loop src="../tuyen-truyen-vien-1.mp4"
+        onloadeddata="this.playbackRate = 0.9"></video>
       <div class="row">
         <div class="col-12 questionWrapper animate__animated animate__fadeIn">
           <div id="questionHolder">

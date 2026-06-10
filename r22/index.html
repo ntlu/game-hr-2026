@@ -46,12 +46,12 @@
 
     .questionBadge {
       position: absolute;
-      top: 100px;
+      top: 15vh;
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(90deg, #ff007f, #7928ca);
       color: #ffffff;
-      padding: 8px 45px;
+      padding: 2px 45px;
       font-size: 28px;
       font-weight: 900;
       font-family: 'Montserrat', 'Segoe UI', sans-serif;
@@ -82,6 +82,22 @@
 </head>
 
 <body>
+  <!-- SVG filter for outer red border on clip-pathed elements -->
+  <svg width="0" height="0" style="position: absolute; z-index: -1;">
+    <defs>
+      <filter id="red-outer-border" x="-20%" y="-20%" width="140%" height="140%">
+        <feMorphology in="SourceAlpha" operator="dilate" radius="8" result="dilated" />
+        <feFlood flood-color="#ff0000" result="redColor" />
+        <feComposite in="redColor" in2="dilated" operator="in" result="outerBorder" />
+        <feGaussianBlur in="outerBorder" stdDeviation="2" result="glowBorder" />
+        <feMerge>
+          <feMergeNode in="glowBorder" />
+          <feMergeNode in="outerBorder" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
   <div id="app">
     <audio class="d-none" loop :src="audioSrc" id="audio" ref="bgm"></audio>
     <audio class="d-none" :src="sfxSrc" id="audio" ref="sfx"></audio>

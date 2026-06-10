@@ -93,6 +93,7 @@ video#bg {
 
 .svg-piece-wrapper {
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
 .svg-piece-wrapper.solved {
@@ -117,6 +118,9 @@ video#bg {
   transition: all 0.5s;
 }
 
+.svg-piece:hover {
+  fill: rgba(0, 50, 100, 0.9);
+}
 
 .svg-piece.locked {
   fill: rgb(0, 0, 0);
@@ -125,7 +129,7 @@ video#bg {
 }
 
 .svg-piece-text {
-  font-size: 8vh;
+  font-size: 10vh;
   fill: #0ff;
   font-weight: 500;
   text-shadow: 0 0 10px #0ff, 0 0 20px #fff;
